@@ -39,3 +39,8 @@ shObserver.observe(document.documentElement,{childList:true,subtree:true});
 window.addEventListener('load',()=>setTimeout(shApplyBrand,100));
 setTimeout(shApplyBrand,300);
 setTimeout(shApplyBrand,1200);
+
+// Load late stability patch after all core role modules have initialized.
+if(!document.querySelector('script[data-schoolhub-stability]')){
+  const s=document.createElement('script');s.src='/stability-live.js';s.defer=true;s.dataset.schoolhubStability='1';document.body.appendChild(s);
+}
