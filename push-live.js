@@ -12,6 +12,7 @@ function slUrlBase64ToUint8Array(base64String){
 function slPushIsIOS(){return /iphone|ipad|ipod/i.test(navigator.userAgent)}
 function slPushStandalone(){return window.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true}
 function slPushSupported(){return 'serviceWorker'in navigator&&'PushManager'in window&&'Notification'in window}
+function slPushConflict(error){return error?.code==='23505'||String(error?.message||'').toLowerCase().includes('duplicate')||String(error?.details||'').toLowerCase().includes('already exists')}
 
 async function slSavePushSubscription(sub){
   if(!session?.user)throw new Error('Эхлээд нэвтэрнэ үү.');
@@ -23,18 +24,17 @@ async function slSavePushSubscription(sub){
 
 async function slEnsurePushSubscription(){
   if(!slPushSupported())throw new Error('Энэ browser push notification дэмжихгүй байна.');
-  if(slPushIsIOS()&&!slPushStandalone())throw new Error('iPhone дээр эхлээд SchoolLink-ийг Home Screen-д суулгана. Дараа нь icon-оос нээгээд Push асаана уу.');
+  if(slPushIsIOS()&&!slPushStandalone())throw new Error('iPhone дээр эхлээд SchoolHub-ийг Home Screen-д суулгана. Дараа нь icon-оос нээгээд Push асаана уу.');
   const permission=await Notification.requestPermission();
   if(permission!=='granted')throw new Error('Notification permission зөвшөөрөгдөөгүй байна.');
   const reg=await navigator.serviceWorker.ready;
   let sub=await reg.pushManager.getSubscription();
-  if(!sub){sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:slUrlBase64ToUint8Array(SCHOOL_LINK_VAPID_PUBLIC)})}
+  if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:slUrlBase64ToUint8Array(SCHOOL_LINK_VAPID_PUBLIC)});
   try{await slSavePushSubscription(sub)}catch(e){
-    if(String(e?.message||'').toLowerCase().includes('duplicate')){
-      await sub.unsubscribe();
-      sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:slUrlBase64ToUint8Array(SCHOOL_LINK_VAPID_PUBLIC)});
-      await slSavePushSubscription(sub);
-    }else throw e;
+    if(!slPushConflict(e))throw e;
+    await sub.unsubscribe().catch(()=>{});
+    sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:slUrlBase64ToUint8Array(SCHOOL_LINK_VAPID_PUBLIC)});
+    await slSavePushSubscription(sub);
   }
   return sub;
 }
@@ -44,21 +44,41 @@ function slEnsurePushButton(){
   if(!panel||document.getElementById('slPushEnableBtn'))return;
   const head=panel.querySelector('.sectionTitle');if(!head)return;
   const btn=document.createElement('button');btn.id='slPushEnableBtn';btn.className='ghost';btn.textContent='🔔 Push асаах';btn.onclick=slEnablePush;
+  const off=document.createElement('button');off.id='slPushDisableBtn';off.className='ghost';off.textContent='Push унтраах';off.onclick=slDisablePush;off.style.display='none';
   const actions=document.createElement('div');actions.style.cssText='display:flex;gap:6px;flex-wrap:wrap;align-items:center';
-  const mark=[...head.children].find(x=>x.tagName==='BUTTON');if(mark){head.replaceChild(actions,mark);actions.appendChild(btn);actions.appendChild(mark)}else{actions.appendChild(btn);head.appendChild(actions)}
+  const mark=[...head.children].find(x=>x.tagName==='BUTTON');if(mark){head.replaceChild(actions,mark);actions.appendChild(btn);actions.appendChild(off);actions.appendChild(mark)}else{actions.appendChild(btn);actions.appendChild(off);head.appendChild(actions)}
   slRefreshPushButton();
 }
 
 async function slRefreshPushButton(){
-  const btn=document.getElementById('slPushEnableBtn');if(!btn)return;
-  if(!slPushSupported()){btn.textContent='Push дэмжихгүй';btn.disabled=true;return}
-  if(Notification.permission==='denied'){btn.textContent='Push хаалттай';btn.disabled=true;return}
-  try{const reg=await navigator.serviceWorker.ready;const sub=await reg.pushManager.getSubscription();if(sub&&Notification.permission==='granted'){btn.textContent='🔔 Push идэвхтэй';btn.disabled=true}else{btn.textContent='🔔 Push асаах';btn.disabled=false}}catch{btn.textContent='🔔 Push асаах';btn.disabled=false}
+  const btn=document.getElementById('slPushEnableBtn'),off=document.getElementById('slPushDisableBtn');if(!btn)return;
+  if(!slPushSupported()){btn.textContent='Push дэмжихгүй';btn.disabled=true;if(off)off.style.display='none';return}
+  if(Notification.permission==='denied'){btn.textContent='Push хаалттай';btn.disabled=true;if(off)off.style.display='none';return}
+  try{
+    const reg=await navigator.serviceWorker.ready,sub=await reg.pushManager.getSubscription();
+    const active=!!sub&&Notification.permission==='granted';
+    btn.textContent=active?'🔔 Push идэвхтэй':'🔔 Push асаах';btn.disabled=active;
+    if(off)off.style.display=active?'inline-flex':'none';
+  }catch{btn.textContent='🔔 Push асаах';btn.disabled=false;if(off)off.style.display='none'}
 }
 
 window.slEnablePush=async()=>{
   const btn=document.getElementById('slPushEnableBtn');
-  try{if(btn){btn.disabled=true;btn.textContent='Тохируулж байна…'}await slEnsurePushSubscription();if(btn){btn.textContent='🔔 Push идэвхтэй';btn.disabled=true}await slPushFlush()}catch(e){if(btn){btn.disabled=false;btn.textContent='🔔 Push асаах'}alert(e.message||'Push тохируулахад алдаа гарлаа.')}
+  try{if(btn){btn.disabled=true;btn.textContent='Тохируулж байна…'}await slEnsurePushSubscription();await slRefreshPushButton();await slPushFlush()}catch(e){if(btn){btn.disabled=false;btn.textContent='🔔 Push асаах'}alert(e.message||'Push тохируулахад алдаа гарлаа.')}
+};
+
+window.slDisablePush=async()=>{
+  if(!slPushSupported())return;
+  const off=document.getElementById('slPushDisableBtn');
+  try{
+    if(off){off.disabled=true;off.textContent='Унтрааж байна…'}
+    const reg=await navigator.serviceWorker.ready,sub=await reg.pushManager.getSubscription();
+    if(sub){
+      if(session?.user){const {error}=await sb.from('web_push_subscriptions').delete().eq('user_id',session.user.id).eq('endpoint',sub.endpoint);if(error)throw error}
+      await sub.unsubscribe();
+    }
+    await slRefreshPushButton();
+  }catch(e){alert(e.message||'Push унтраахад алдаа гарлаа.')}finally{if(off){off.disabled=false;off.textContent='Push унтраах'}}
 };
 
 async function slPushFlush(){
@@ -73,6 +93,9 @@ function slRoutePushLink(link){
   if(membership.role==='teacher'){
     if(link.startsWith('chat:')&&typeof tpRenderView==='function')tpRenderView('Чат');
     else if(link==='parent:permissions'&&typeof tpRenderView==='function')tpRenderView('Зөвшөөрөл');
+    else if(link==='parent:assignments'&&typeof tpRenderView==='function')tpRenderView('Даалгавар');
+    else if(link==='parent:observations'&&typeof tpRenderView==='function')tpRenderView('Ажиглалт');
+    else if(link==='parent:summaries'&&typeof tpRenderView==='function')tpRenderView('Сарын тайлан');
     else if(typeof tpRenderView==='function')tpRenderView('Мэдээлэл');
     return true;
   }
@@ -87,18 +110,26 @@ function slRoutePushLink(link){
   }
   return false;
 }
+function slStorePushLink(link){if(link)localStorage.setItem('schoollink_push_link',link)}
 function slTryPendingPush(){const link=localStorage.getItem('schoollink_push_link')||'';if(link&&slRoutePushLink(link))localStorage.removeItem('schoollink_push_link')}
-
-if('serviceWorker'in navigator){
-  navigator.serviceWorker.addEventListener('message',event=>{if(event.data?.type==='schoollink-push-open'){localStorage.setItem('schoollink_push_link',event.data.link||'');setTimeout(slTryPendingPush,300)}});
+function slReadPushQuery(){
+  try{
+    const url=new URL(location.href),link=url.searchParams.get('push');
+    if(!link)return;
+    slStorePushLink(link);url.searchParams.delete('push');history.replaceState({},'',url.pathname+url.search+url.hash);
+  }catch(e){console.warn('Push deep link',e)}
 }
 
-const slPushBaseEnsure=window.slEnsureNotificationUI||slEnsureNotificationUI;
+if('serviceWorker'in navigator){
+  navigator.serviceWorker.addEventListener('message',event=>{if(event.data?.type==='schoollink-push-open'){slStorePushLink(event.data.link||'');setTimeout(slTryPendingPush,300)}});
+}
+
 if(typeof slEnsureNotificationUI==='function'){
   const base=slEnsureNotificationUI;
   slEnsureNotificationUI=function(){base();setTimeout(slEnsurePushButton,0)};
 }
 
+slReadPushQuery();
 setInterval(slTryPendingPush,1200);
 setTimeout(()=>{slEnsurePushButton();slRefreshPushButton();slStartPushFlush();slPushFlush();slTryPendingPush()},1000);
 document.addEventListener('visibilitychange',()=>{if(!document.hidden){slPushFlush();slTryPendingPush()}});
