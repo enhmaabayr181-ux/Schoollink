@@ -1,4 +1,4 @@
-const CACHE='schoolhub-shell-v6';
+const CACHE='schoolhub-shell-v7';
 const SHELL=['/','/index.html','/style.css','/app.js','/parent-live.js','/teacher-pro.js','/teacher-fix.js','/parent-attachments.js','/admin-pro.js','/parent-pro.js','/calendar-live.js','/poll-live.js','/notifications-live.js','/pwa-install.js','/push-live.js','/manifest.webmanifest','/icons/schoollink-192.svg','/icons/schoollink-512.svg'];
 
 self.addEventListener('install',event=>{
