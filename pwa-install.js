@@ -9,18 +9,26 @@ if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serv
 setTimeout(slEnsureInstallButton,600);
 
 // ===== SchoolHub brand refresh =====
+function shReplaceTextNode(node){
+  if(!node?.nodeValue)return;
+  if(node.nodeValue.includes('SchoolLink'))node.nodeValue=node.nodeValue.replaceAll('SchoolLink','SchoolHub');
+  if(node.nodeValue.includes('SCHOOLLINK'))node.nodeValue=node.nodeValue.replaceAll('SCHOOLLINK','SCHOOLHUB');
+}
+function shBrandLogo(el){
+  if(!el||el.dataset.schoolhubBranded==='1')return;
+  el.dataset.schoolhubBranded='1';
+  el.innerHTML='<img src="/icons/schoolhub-192.svg" alt="SchoolHub" style="width:100%;height:100%;object-fit:contain;border-radius:12px">';
+  el.style.background='transparent';el.style.boxShadow='none';el.style.padding='0';
+}
 function shReplaceBrand(root=document){
   document.title='SchoolHub';
   const apple=document.querySelector('meta[name="apple-mobile-web-app-title"]');if(apple)apple.setAttribute('content','SchoolHub');
+  if(root?.nodeType===Node.TEXT_NODE){shReplaceTextNode(root);return}
+  if(!root?.querySelectorAll&&!root?.ownerDocument)return;
   const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT);
-  const nodes=[];while(walker.nextNode())nodes.push(walker.currentNode);
-  nodes.forEach(n=>{if(n.nodeValue?.includes('SchoolLink'))n.nodeValue=n.nodeValue.replaceAll('SchoolLink','SchoolHub');if(n.nodeValue?.includes('SCHOOLLINK'))n.nodeValue=n.nodeValue.replaceAll('SCHOOLLINK','SCHOOLHUB')});
-  document.querySelectorAll('.brand .logo').forEach(el=>{
-    if(el.dataset.schoolhubBranded==='1')return;
-    el.dataset.schoolhubBranded='1';
-    el.innerHTML='<img src="/icons/schoollink-192.svg" alt="SchoolHub" style="width:100%;height:100%;object-fit:contain;border-radius:12px">';
-    el.style.background='transparent';el.style.boxShadow='none';el.style.padding='0';
-  });
+  while(walker.nextNode())shReplaceTextNode(walker.currentNode);
+  if(root.matches?.('.brand .logo'))shBrandLogo(root);
+  root.querySelectorAll?.('.brand .logo').forEach(shBrandLogo);
 }
 
 function shEnsureEmailReminder(){
@@ -33,11 +41,17 @@ function shEnsureEmailReminder(){
     const chip=document.createElement('div');chip.id='shSignedEmail';chip.className='memberBadge';
     chip.style.cssText='max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
     chip.title=email;chip.textContent=`✉ ${email}`;topActions.insertBefore(chip,topActions.firstChild);
-  }else if(document.getElementById('shSignedEmail')) document.getElementById('shSignedEmail').textContent=`✉ ${email}`;
+  }else if(document.getElementById('shSignedEmail'))document.getElementById('shSignedEmail').textContent=`✉ ${email}`;
 }
 
 function shApplyBrand(){shReplaceBrand(document);shEnsureEmailReminder()}
-const shObserver=new MutationObserver(()=>{clearTimeout(window.__shBrandTimer);window.__shBrandTimer=setTimeout(shApplyBrand,80)});
+const shObserver=new MutationObserver(mutations=>{
+  for(const m of mutations)for(const node of m.addedNodes){
+    if(node.nodeType===Node.TEXT_NODE)shReplaceTextNode(node);
+    else if(node.nodeType===Node.ELEMENT_NODE)shReplaceBrand(node);
+  }
+  clearTimeout(window.__shEmailTimer);window.__shEmailTimer=setTimeout(shEnsureEmailReminder,80);
+});
 shObserver.observe(document.documentElement,{childList:true,subtree:true});
 window.addEventListener('load',()=>setTimeout(shApplyBrand,100));
 setTimeout(shApplyBrand,300);
