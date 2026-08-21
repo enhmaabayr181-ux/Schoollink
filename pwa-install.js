@@ -67,3 +67,4 @@ shLoadLateScript('/stability-live.js','schoolhub-stability');
 shLoadLateScript('/portfolio-live.js','schoolhub-portfolio');
 shLoadLateScript('/teacher-sharing.js','schoolhub-teacher-sharing');
 shLoadLateScript('/portfolio-sharing-patch.js','schoolhub-portfolio-sharing');
+shLoadLateScript('/visual-cards.js','schoolhub-visual-cards');
