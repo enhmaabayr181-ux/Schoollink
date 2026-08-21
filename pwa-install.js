@@ -16,14 +16,17 @@ function shReplaceBrand(root=document){
   const nodes=[];while(walker.nextNode())nodes.push(walker.currentNode);
   nodes.forEach(n=>{if(n.nodeValue?.includes('SchoolLink'))n.nodeValue=n.nodeValue.replaceAll('SchoolLink','SchoolHub');if(n.nodeValue?.includes('SCHOOLLINK'))n.nodeValue=n.nodeValue.replaceAll('SCHOOLLINK','SCHOOLHUB')});
   document.querySelectorAll('.brand .logo').forEach(el=>{
+    if(el.dataset.schoolhubBranded==='1')return;
+    el.dataset.schoolhubBranded='1';
     el.innerHTML='<img src="/icons/schoollink-192.svg" alt="SchoolHub" style="width:100%;height:100%;object-fit:contain;border-radius:12px">';
     el.style.background='transparent';el.style.boxShadow='none';el.style.padding='0';
   });
 }
 
 function shEnsureEmailReminder(){
-  if(!session?.user?.email)return;
-  const email=session.user.email;
+  const currentSession=typeof session!=='undefined'?session:null;
+  if(!currentSession?.user?.email)return;
+  const email=currentSession.user.email;
   const profileMeta=document.getElementById('profileMeta');if(profileMeta)profileMeta.textContent=`Нэвтэрсэн мэйл: ${email}`;
   const topActions=document.querySelector('.top > div:last-child');
   if(topActions&&!document.getElementById('shSignedEmail')){
@@ -34,18 +37,19 @@ function shEnsureEmailReminder(){
 }
 
 function shApplyBrand(){shReplaceBrand(document);shEnsureEmailReminder()}
-const shObserver=new MutationObserver(()=>{clearTimeout(window.__shBrandTimer);window.__shBrandTimer=setTimeout(shApplyBrand,60)});
+const shObserver=new MutationObserver(()=>{clearTimeout(window.__shBrandTimer);window.__shBrandTimer=setTimeout(shApplyBrand,80)});
 shObserver.observe(document.documentElement,{childList:true,subtree:true});
 window.addEventListener('load',()=>setTimeout(shApplyBrand,100));
 setTimeout(shApplyBrand,300);
 setTimeout(shApplyBrand,1200);
 
-// Load late stability patch after all core role modules have initialized.
-if(!document.querySelector('script[data-schoolhub-stability]')){
-  const s=document.createElement('script');s.src='/stability-live.js';s.defer=true;s.dataset.schoolhubStability='1';document.body.appendChild(s);
+function shLoadLateScript(src,dataKey){
+  if(document.querySelector(`script[data-${dataKey}]`))return;
+  const s=document.createElement('script');s.src=src;s.defer=true;s.setAttribute(`data-${dataKey}`,'1');document.body.appendChild(s);
 }
 
-// Teacher controls what administration may view. Administration is read-only.
-if(!document.querySelector('script[data-schoolhub-teacher-sharing]')){
-  const s=document.createElement('script');s.src='/teacher-sharing.js';s.defer=true;s.dataset.schoolhubTeacherSharing='1';document.body.appendChild(s);
-}
+// Load late modules after all core role modules have initialized.
+shLoadLateScript('/stability-live.js','schoolhub-stability');
+shLoadLateScript('/portfolio-live.js','schoolhub-portfolio');
+shLoadLateScript('/teacher-sharing.js','schoolhub-teacher-sharing');
+shLoadLateScript('/portfolio-sharing-patch.js','schoolhub-portfolio-sharing');
