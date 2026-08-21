@@ -69,3 +69,4 @@ shLoadLateScript('/teacher-sharing.js','schoolhub-teacher-sharing');
 shLoadLateScript('/portfolio-sharing-patch.js','schoolhub-portfolio-sharing');
 shLoadLateScript('/visual-cards.js','schoolhub-visual-cards');
 shLoadLateScript('/launch-polish.js','schoolhub-launch-polish');
+shLoadLateScript('/billing-live.js','schoolhub-billing');
