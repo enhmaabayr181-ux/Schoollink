@@ -44,3 +44,8 @@ setTimeout(shApplyBrand,1200);
 if(!document.querySelector('script[data-schoolhub-stability]')){
   const s=document.createElement('script');s.src='/stability-live.js';s.defer=true;s.dataset.schoolhubStability='1';document.body.appendChild(s);
 }
+
+// Teacher controls what administration may view. Administration is read-only.
+if(!document.querySelector('script[data-schoolhub-teacher-sharing]')){
+  const s=document.createElement('script');s.src='/teacher-sharing.js';s.defer=true;s.dataset.schoolhubTeacherSharing='1';document.body.appendChild(s);
+}
