@@ -1,4 +1,4 @@
-const CACHE='schoolhub-shell-v3';
+const CACHE='schoolhub-shell-v4';
 const SHELL=['/','/index.html','/style.css','/app.js','/parent-live.js','/teacher-pro.js','/teacher-fix.js','/parent-attachments.js','/admin-pro.js','/parent-pro.js','/notifications-live.js','/pwa-install.js','/push-live.js','/manifest.webmanifest','/icons/schoollink-192.svg','/icons/schoollink-512.svg'];
 
 self.addEventListener('install',event=>{
@@ -54,6 +54,7 @@ self.addEventListener('notificationclick',event=>{
       client.postMessage({type:'schoollink-push-open',link});
       return;
     }
-    await self.clients.openWindow('/');
+    const target=link?'/?push='+encodeURIComponent(link):'/';
+    await self.clients.openWindow(target);
   })());
 });
