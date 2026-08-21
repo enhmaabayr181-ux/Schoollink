@@ -1,5 +1,5 @@
-const CACHE='schoolhub-shell-v9';
-const SHELL=['/','/index.html','/style.css','/app.js','/parent-live.js','/teacher-pro.js','/teacher-fix.js','/parent-attachments.js','/admin-pro.js','/parent-pro.js','/calendar-live.js','/poll-live.js','/notifications-live.js','/pwa-install.js','/push-live.js','/stability-live.js','/portfolio-live.js','/teacher-sharing.js','/portfolio-sharing-patch.js','/manifest.webmanifest','/icons/schoollink-192.svg','/icons/schoollink-512.svg'];
+const CACHE='schoolhub-shell-v10';
+const SHELL=['/','/index.html','/style.css','/app.js','/parent-live.js','/teacher-pro.js','/teacher-fix.js','/parent-attachments.js','/admin-pro.js','/parent-pro.js','/calendar-live.js','/poll-live.js','/notifications-live.js','/pwa-install.js','/push-live.js','/stability-live.js','/portfolio-live.js','/teacher-sharing.js','/portfolio-sharing-patch.js','/manifest.webmanifest','/icons/schoolhub-192.svg','/icons/schoolhub-512.svg'];
 
 self.addEventListener('install',event=>{
   event.waitUntil(caches.open(CACHE).then(c=>c.addAll(SHELL)).catch(()=>{}));
@@ -21,11 +21,17 @@ self.addEventListener('fetch',event=>{
     }).catch(()=>caches.match('/index.html')));
     return;
   }
-  if(url.origin===self.location.origin){
-    event.respondWith(caches.match(req).then(hit=>hit||fetch(req).then(res=>{
+  if(url.origin!==self.location.origin)return;
+  const freshAsset=/\.(?:js|css|webmanifest)$/.test(url.pathname);
+  if(freshAsset){
+    event.respondWith(fetch(req).then(res=>{
       const copy=res.clone();caches.open(CACHE).then(c=>c.put(req,copy)).catch(()=>{});return res;
-    })));
+    }).catch(()=>caches.match(req)));
+    return;
   }
+  event.respondWith(caches.match(req).then(hit=>hit||fetch(req).then(res=>{
+    const copy=res.clone();caches.open(CACHE).then(c=>c.put(req,copy)).catch(()=>{});return res;
+  })));
 });
 
 self.addEventListener('push',event=>{
@@ -34,8 +40,8 @@ self.addEventListener('push',event=>{
   const title=data.title||'SchoolHub';
   const options={
     body:data.body||'Шинэ мэдэгдэл ирлээ.',
-    icon:'/icons/schoollink-192.svg',
-    badge:'/icons/schoollink-192.svg',
+    icon:'/icons/schoolhub-192.svg',
+    badge:'/icons/schoolhub-192.svg',
     tag:data.notification_id||data.type||'schoolhub',
     renotify:true,
     data:{link:data.link||'',notification_id:data.notification_id||''}
