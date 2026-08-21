@@ -10,7 +10,7 @@
   "background_color": "#f7f7fb",
   "theme_color": "#6d5dfc",
   "icons": [
-    {"src":"/icons/schoollink-192.svg","sizes":"192x192","type":"image/svg+xml","purpose":"any"},
-    {"src":"/icons/schoollink-512.svg","sizes":"512x512","type":"image/svg+xml","purpose":"any maskable"}
+    {"src":"/icons/schoolhub-192.svg","sizes":"192x192","type":"image/svg+xml","purpose":"any"},
+    {"src":"/icons/schoolhub-512.svg","sizes":"512x512","type":"image/svg+xml","purpose":"any maskable"}
   ]
 }
