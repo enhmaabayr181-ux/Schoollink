@@ -96,12 +96,16 @@ function slRoutePushLink(link){
     else if(link==='parent:assignments'&&typeof tpRenderView==='function')tpRenderView('Даалгавар');
     else if(link==='parent:observations'&&typeof tpRenderView==='function')tpRenderView('Ажиглалт');
     else if(link==='parent:summaries'&&typeof tpRenderView==='function')tpRenderView('Сарын тайлан');
+    else if(link==='parent:polls'&&typeof shRenderPolls==='function')shRenderPolls();
+    else if(link==='parent:calendar'&&typeof shRenderCalendar==='function')shRenderCalendar();
     else if(typeof tpRenderView==='function')tpRenderView('Мэдээлэл');
     return true;
   }
   if(membership.role==='parent'){
     if(link.startsWith('chat:')&&typeof ppOpenChat==='function')ppOpenChat(link.split(':')[1]);
     else if(link==='parent:polls'&&typeof shRenderPolls==='function')shRenderPolls();
+    else if(link==='parent:calendar'&&typeof shRenderCalendar==='function')shRenderCalendar();
+    else if(link==='parent:portfolio'&&typeof shRenderPortfolio==='function')shRenderPortfolio();
     else if(link==='parent:assignments')document.getElementById('parentAssignments')?.scrollIntoView({behavior:'smooth',block:'start'});
     else if(link==='parent:permissions')document.getElementById('parentPermissions')?.scrollIntoView({behavior:'smooth',block:'start'});
     else if(link==='parent:observations')document.getElementById('parentObservations')?.scrollIntoView({behavior:'smooth',block:'start'});
