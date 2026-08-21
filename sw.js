@@ -1,4 +1,4 @@
-const CACHE='schoollink-shell-v2';
+const CACHE='schoolhub-shell-v3';
 const SHELL=['/','/index.html','/style.css','/app.js','/parent-live.js','/teacher-pro.js','/teacher-fix.js','/parent-attachments.js','/admin-pro.js','/parent-pro.js','/notifications-live.js','/pwa-install.js','/push-live.js','/manifest.webmanifest','/icons/schoollink-192.svg','/icons/schoollink-512.svg'];
 
 self.addEventListener('install',event=>{
@@ -30,13 +30,13 @@ self.addEventListener('fetch',event=>{
 
 self.addEventListener('push',event=>{
   let data={};
-  try{data=event.data?event.data.json():{}}catch{data={title:'SchoolLink',body:event.data?.text()||'Шинэ мэдэгдэл ирлээ.'}}
-  const title=data.title||'SchoolLink';
+  try{data=event.data?event.data.json():{}}catch{data={title:'SchoolHub',body:event.data?.text()||'Шинэ мэдэгдэл ирлээ.'}}
+  const title=data.title||'SchoolHub';
   const options={
     body:data.body||'Шинэ мэдэгдэл ирлээ.',
     icon:'/icons/schoollink-192.svg',
     badge:'/icons/schoollink-192.svg',
-    tag:data.notification_id||data.type||'schoollink',
+    tag:data.notification_id||data.type||'schoolhub',
     renotify:true,
     data:{link:data.link||'',notification_id:data.notification_id||''}
   };
