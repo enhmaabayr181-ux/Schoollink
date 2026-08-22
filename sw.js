@@ -1,8 +1,8 @@
-const CACHE='schoolhub-shell-v19';
-const SHELL=['/','/index.html','/style.css','/app.js','/parent-live.js','/teacher-pro.js','/teacher-fix.js','/parent-attachments.js','/admin-pro.js','/parent-pro.js','/calendar-live.js','/poll-live.js','/notifications-live.js','/pwa-install.js','/push-live.js','/auth-input-fix.js','/stability-live.js','/portfolio-live.js','/teacher-sharing.js','/portfolio-sharing-patch.js','/visual-cards.js','/launch-polish.js','/billing-live.js','/manifest.webmanifest','/icons/schoolhub-192.svg','/icons/schoolhub-512.svg'];
+const CACHE='schoolhub-shell-v20';
+const SHELL=['/','/index.html','/style.css','/app.js','/parent-live.js','/teacher-pro.js','/teacher-fix.js','/parent-attachments.js','/admin-pro.js','/parent-pro.js','/calendar-live.js','/poll-live.js','/notifications-live.js','/pwa-install.js','/push-live.js','/auth-input-fix.js','/login-hotfix.js','/stability-live.js','/portfolio-live.js','/teacher-sharing.js','/portfolio-sharing-patch.js','/visual-cards.js','/launch-polish.js','/billing-live.js','/manifest.webmanifest','/icons/schoolhub-192.svg','/icons/schoolhub-512.svg'];
 
 self.addEventListener('install',event=>{
-  event.waitUntil(caches.open(CACHE).then(c=>c.addAll(SHELL)).catch(()=>{}));
+  event.waitUntil(caches.open(CACHE).then(c=>c.addAll(SHELL)).catch(error=>console.error('SchoolHub shell cache install failed',error)));
   self.skipWaiting();
 });
 
