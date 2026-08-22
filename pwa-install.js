@@ -62,6 +62,9 @@ function shLoadLateScript(src,dataKey){
   const s=document.createElement('script');s.src=src;s.defer=true;s.setAttribute(`data-${dataKey}`,'1');document.body.appendChild(s);
 }
 
+// Load auth interaction fix first so mobile Safari inputs remain tappable.
+shLoadLateScript('/auth-input-fix.js','schoolhub-auth-fix');
+
 // Load late modules after all core role modules have initialized.
 shLoadLateScript('/stability-live.js','schoolhub-stability');
 shLoadLateScript('/portfolio-live.js','schoolhub-portfolio');
