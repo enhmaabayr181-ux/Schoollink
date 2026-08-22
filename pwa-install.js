@@ -35,13 +35,18 @@ function shEnsureEmailReminder(){
   const currentSession=typeof session!=='undefined'?session:null;
   if(!currentSession?.user?.email)return;
   const email=currentSession.user.email;
-  const profileMeta=document.getElementById('profileMeta');if(profileMeta)profileMeta.textContent=`Нэвтэрсэн мэйл: ${email}`;
+  const profileMeta=document.getElementById('profileMeta'),profileText=`Нэвтэрсэн мэйл: ${email}`;
+  if(profileMeta&&profileMeta.textContent!==profileText)profileMeta.textContent=profileText;
   const topActions=document.querySelector('.top > div:last-child');
-  if(topActions&&!document.getElementById('shSignedEmail')){
-    const chip=document.createElement('div');chip.id='shSignedEmail';chip.className='memberBadge';
+  let chip=document.getElementById('shSignedEmail');
+  if(topActions&&!chip){
+    chip=document.createElement('div');chip.id='shSignedEmail';chip.className='memberBadge';
     chip.style.cssText='max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
     chip.title=email;chip.textContent=`✉ ${email}`;topActions.insertBefore(chip,topActions.firstChild);
-  }else if(document.getElementById('shSignedEmail'))document.getElementById('shSignedEmail').textContent=`✉ ${email}`;
+  }else if(chip){
+    const chipText=`✉ ${email}`;
+    if(chip.textContent!==chipText)chip.textContent=chipText;
+  }
 }
 
 function shApplyBrand(){shReplaceBrand(document);shEnsureEmailReminder()}
