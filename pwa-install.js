@@ -58,7 +58,7 @@ setTimeout(shApplyBrand,300);
 setTimeout(shApplyBrand,1200);
 
 function shLoadLateScript(src,dataKey){
-  if(document.querySelector(`script[data-${dataKey}]`))return;
+  if(document.querySelector(`script[src="${src}"]`)||document.querySelector(`script[data-${dataKey}]`))return;
   const s=document.createElement('script');s.src=src;s.defer=true;s.setAttribute(`data-${dataKey}`,'1');document.body.appendChild(s);
 }
 
