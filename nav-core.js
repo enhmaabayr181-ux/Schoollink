@@ -79,7 +79,7 @@
     const nav=document.getElementById('nav');
     if(!nav)return;
     [...nav.querySelectorAll('button')].forEach(button=>{
-      if(currentRole==='teacher')return;
+      if(currentRole==='teacher'||button.id==='shBillingNav')return;
       if(button.dataset.shCoreNav==='1')return;
       button.dataset.shCoreNav='1';
       button.onclick=async()=>{
