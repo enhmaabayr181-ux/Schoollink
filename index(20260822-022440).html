@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="mn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#6d5dfc">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="SchoolHub">
+<title>SchoolHub</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" href="/icons/schoolhub-192.svg" type="image/svg+xml">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.1/dist/umd/supabase.min.js"></script>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<div id="authWrap" class="authWrap">
+  <div class="authCard">
+    <div class="brand"><div class="logo">S</div><div><h1>SchoolHub</h1><div class="muted">School–Family OS</div></div></div>
+    <p class="muted">И-мэйл, нууц үгээрээ нэвтэрнэ. Урилгын кодтой бол бүртгүүлэхдээ хамт оруулж болно.</p>
+    <label>И-мэйл</label><input id="email" type="email" autocomplete="email">
+    <label>Нууц үг</label><input id="password" type="password" autocomplete="current-password">
+    <div class="inviteHint"><b>Урилгын кодтой юу?</b><div class="muted" style="font-size:12px;margin-top:4px">Багш, эцэг эх, сургуулийн админ бол нэр болон кодоо оруулна.</div>
+      <label>Таны нэр</label><input id="authFullName" placeholder="Овог нэр">
+      <label>Урилгын код</label><input id="authInviteCode" placeholder="Жишээ: A1B2C3D4" style="text-transform:uppercase">
+    </div>
+    <div class="authActions"><button id="login" class="btn primary">Нэвтрэх</button><button id="signup" class="btn secondary">Бүртгэл үүсгэх</button></div>
+    <div id="authStatus" class="status"></div>
+  </div>
+</div>
+
+<div id="joinWrap" class="joinWrap hidden">
+  <div class="joinCard">
+    <div class="brand"><div class="logo">S</div><div><h1>SchoolHub</h1><div class="muted">Сургуульдаа нэгдэх</div></div></div>
+    <p class="muted">Таны account бүртгэгдсэн байна. Сургуулиас авсан урилгын кодоо оруулна уу.</p>
+    <label>Таны нэр</label><input id="joinFullName" placeholder="Овог нэр">
+    <label>Урилгын код</label><input id="joinInviteCode" placeholder="Жишээ: A1B2C3D4" style="text-transform:uppercase">
+    <button id="joinBtn" class="btn primary" style="width:100%;margin-top:16px">Урилгын кодоор нэгдэх</button>
+    <button id="joinLogout" class="btn secondary" style="width:100%;margin-top:9px">Өөр account-аар нэвтрэх</button>
+    <div id="joinStatus" class="status"></div>
+  </div>
+</div>
+
+<div id="app" class="app hidden">
+  <aside class="side">
+    <div class="brand"><div class="logo">S</div><div><h1>SchoolHub</h1><div class="muted">Live</div></div></div>
+    <nav id="nav" class="nav"></nav>
+    <div class="profile"><b id="profileName">SchoolHub</b><div id="profileMeta" class="muted"></div><div id="memberSchool" class="memberBadge hidden" style="margin-top:8px"></div></div>
+  </aside>
+  <main class="main">
+    <div class="top">
+      <div><div class="muted">SCHOOL–FAMILY OS</div><h2 id="title">Dashboard</h2></div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <div class="rolebar"><button data-role="owner" class="active">Owner</button><button data-role="teacher">Багш</button><button data-role="parent">Эцэг эх</button><button data-role="admin">Удирдлага</button></div>
+        <button id="logout" class="logout">Гарах</button>
+      </div>
+    </div>
+
+    <section id="owner" class="page active">
+      <div class="grid">
+        <div class="card hero"><span class="pill">◆ PLATFORM OWNER</span><h3>SchoolHub-ийн бүх сургуулийг нэг самбараас удирдана.</h3><p id="ownerEmail"></p></div>
+        <div class="card quick"><div class="sectionTitle"><h3>Нэгдсэн үзүүлэлт</h3><span class="demoTag">LIVE</span></div><div id="ownerMetrics" class="metricGrid"></div></div>
+        <div class="card full"><div class="sectionTitle"><h3>Сургуулиуд</h3><div style="display:flex;gap:8px"><button class="ghost" onclick="loadOwner()">↻ Шинэчлэх</button><button class="btn primary" onclick="openNewSchool()">＋ Шинэ сургууль</button></div></div><div id="ownerSchools" class="empty">Одоогоор сургууль алга байна.</div></div>
+      </div>
+    </section>
+
+    <section id="teacher" class="page">
+      <div class="grid">
+        <div class="card hero"><span class="pill">БАГШ</span><h3 id="teacherHeroTitle">Өнөөдрийн ангийн ажлаа нэг дороос.</h3><p id="teacherHeroMeta">Бодит өгөгдөл ачаалж байна.</p></div>
+        <div class="card quick"><div class="sectionTitle"><h3>Өнөөдөр</h3><span class="demoTag">LIVE</span></div><div class="quickGrid"><div class="quickItem mint"><small>Ирц</small><b id="teacherAttendance">—</b></div><div class="quickItem blue"><small>Сурагч</small><b id="teacherStudentCount">0</b></div><div class="quickItem rose"><small>Хоцорсон/тасалсан</small><b id="teacherAttentionCount">0</b></div><div class="quickItem"><small>Даалгавар</small><b id="teacherAssignmentCount">0</b></div></div></div>
+        <div class="card wide"><div class="sectionTitle"><h3>Манай анги</h3><button class="ghost" onclick="loadTeacherDashboard()">↻ Шинэчлэх</button></div><div id="teacherStudents" class="empty">Сурагчийн мэдээлэл ачаалж байна…</div></div>
+        <div class="card narrow"><div class="sectionTitle"><h3>Quick Actions</h3></div><div class="list"><button class="mini blue actionMini" onclick="openAttendanceModal()">✓ Ирц бүртгэх</button><button class="mini actionMini" onclick="openAssignmentModal()">✎ Даалгавар өгөх</button><button class="mini mint actionMini" onclick="tpRenderView('Мэдээлэл')">＋ Шинэ мэдээлэл</button><button class="mini rose actionMini" onclick="tpRenderView('Ажиглалт')">◎ Ажиглалт нэмэх</button></div></div>
+        <div class="card full"><div class="sectionTitle"><h3>Сүүлийн даалгаврууд</h3></div><div id="teacherAssignments" class="empty">Даалгавар алга.</div></div>
+      </div>
+    </section>
+
+    <section id="parent" class="page"><div class="grid"><div class="card hero"><span class="pill">ЭЦЭГ ЭХ</span><h3>Хүүхдийн мэдээлэл нэг дор.</h3><p>Ирц, даалгавар, багшийн мэдээлэл, ахиц.</p></div></div></section>
+    <section id="admin" class="page"><div class="grid"><div class="card hero"><span class="pill">УДИРДЛАГА</span><h3>Сургуулийн үйл ажиллагааны нэгдсэн хяналт.</h3><p>Анги, багш, сурагч, мэдээлэл, тайлан.</p></div></div></section>
+  </main>
+</div>
+
+<div id="attendanceModal" class="modal hidden"><div class="modalCard"><div class="modalTop"><div><div class="muted">БАГШ</div><h3>Өнөөдрийн ирц</h3></div><button class="close" onclick="closeTeacherModal('attendanceModal')">×</button></div><div id="attendanceList" class="list"></div><button class="btn primary" style="width:100%;margin-top:14px" onclick="saveAttendance()">Ирц хадгалах</button><div id="attendanceStatus" class="status"></div></div></div>
+<div id="assignmentModal" class="modal hidden"><div class="modalCard"><div class="modalTop"><div><div class="muted">БАГШ</div><h3>Шинэ даалгавар</h3></div><button class="close" onclick="closeTeacherModal('assignmentModal')">×</button></div><label>Хичээл</label><input id="assignmentSubject" placeholder="Математик"><label>Гарчиг</label><input id="assignmentTitle" placeholder="42-р хуудасны дасгал"><label>Тайлбар</label><input id="assignmentDesc" placeholder="Нэмэлт тайлбар"><label>Хугацаа</label><input id="assignmentDue" type="datetime-local"><button class="btn primary" style="width:100%;margin-top:14px" onclick="saveAssignment()">Даалгавар өгөх</button><div id="assignmentStatus" class="status"></div></div></div>
+<div id="schoolModal" class="modal hidden"><div class="modalCard"><div class="modalTop"><div><div class="muted">OWNER SETUP</div><h3 id="schoolModalTitle">Шинэ сургууль</h3></div><button class="close" onclick="closeSchoolModal()">×</button></div><div id="newSchoolPane"><label>Сургуулийн нэр</label><input id="newSchoolName" placeholder="Жишээ: 1-р сургууль"><label>Trial хугацаа</label><select id="trialDays"><option value="7">7 хоног</option><option value="14">14 хоног</option><option value="30">30 хоног</option></select><button id="createSchoolBtn" class="btn primary" style="width:100%;margin-top:16px" onclick="createSchool()">Сургууль үүсгэх</button><div id="newSchoolStatus" class="status"></div></div><div id="schoolSetupPane" class="hidden"><div id="schoolSummary" class="notice"></div><div class="tabs"><button class="active" data-setup="class">1. Анги</button><button data-setup="student">2. Сурагч</button><button data-setup="invite">3. Урилга</button></div><div id="setup-class" class="setupPane active"><div class="formCard"><h4>＋ Анги нэмэх</h4><div class="formGrid"><div><label>Ангийн нэр</label><input id="className" placeholder="7А"></div><div><label>Анги</label><input id="classGrade" type="number" min="1" max="12" placeholder="7"></div><div><label>Бүлэг/үсэг</label><input id="classSection" placeholder="А"></div><div><label>Хичээлийн жил</label><input id="academicYear" value="2026-2027"></div></div><button class="btn primary" style="width:100%;margin-top:14px" onclick="createClass()">Анги нэмэх</button><div id="classStatus" class="status"></div></div><div class="formCard" style="margin-top:12px"><h4>Одоогийн ангиуд</h4><div id="classList" class="empty">Анги алга.</div></div></div><div id="setup-student" class="setupPane"><div class="formCard"><h4>＋ Сурагч нэмэх</h4><label>Анги</label><select id="studentClass"></select><div class="formGrid"><div><label>Овог нэр</label><input id="studentName" placeholder="Б. Тэмүүлэн"></div><div><label>Сурагчийн код</label><input id="studentCode" placeholder="ST-001"></div><div><label>Төрсөн огноо</label><input id="studentBirth" type="date"></div></div><button class="btn primary" style="width:100%;margin-top:14px" onclick="createStudent()">Сурагч нэмэх</button><div id="studentStatus" class="status"></div></div><div class="formCard" style="margin-top:12px"><h4>Сурагчид</h4><div id="studentList" class="empty">Сурагч алга.</div></div></div><div id="setup-invite" class="setupPane"><div class="formCard"><h4>🔗 Урилгын код үүсгэх</h4><label>Хэрэглэгчийн төрөл</label><select id="inviteRole" onchange="updateInviteFields()"><option value="admin">Сургуулийн админ</option><option value="teacher">Багш</option><option value="parent">Эцэг эх</option></select><div id="inviteClassWrap" class="hidden"><label>Анги</label><select id="inviteClass"></select></div><div id="inviteStudentWrap" class="hidden"><label>Сурагч</label><select id="inviteStudent"></select></div><button class="btn primary" style="width:100%;margin-top:14px" onclick="createInvite()">Урилгын код үүсгэх</button><div id="inviteStatus" class="status"></div><div id="inviteCodeBox" class="codeBox hidden"></div></div></div></div></div></div>
+<script src="/app.js"></script>
+<script src="/parent-live.js"></script>
+<script src="/teacher-pro.js"></script>
+<script src="/teacher-fix.js"></script>
+<script src="/parent-attachments.js"></script>
+<script src="/admin-pro.js"></script>
+<script src="/parent-pro.js"></script>
+<script src="/calendar-live.js"></script>
+<script src="/poll-live.js"></script>
+<script src="/notifications-live.js"></script>
+<script src="/pwa-install.js"></script>
+<script src="/push-live.js"></script>
+</body>
+</html>
