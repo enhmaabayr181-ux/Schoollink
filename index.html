@@ -6,8 +6,8 @@
 <meta name="theme-color" content="#6d5dfc">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="SchoolLink">
-<title>SchoolLink</title>
+<meta name="apple-mobile-web-app-title" content="SchoolHub">
+<title>SchoolHub</title>
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="icon" href="/icons/schoollink-192.svg" type="image/svg+xml">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.1/dist/umd/supabase.min.js"></script>
@@ -16,7 +16,7 @@
 <body>
 <div id="authWrap" class="authWrap">
   <div class="authCard">
-    <div class="brand"><div class="logo">S</div><div><h1>SchoolLink</h1><div class="muted">School–Family OS</div></div></div>
+    <div class="brand"><div class="logo">S</div><div><h1>SchoolHub</h1><div class="muted">School–Family OS</div></div></div>
     <p class="muted">И-мэйл, нууц үгээрээ нэвтэрнэ. Урилгын кодтой бол бүртгүүлэхдээ хамт оруулж болно.</p>
     <label>И-мэйл</label><input id="email" type="email" autocomplete="email">
     <label>Нууц үг</label><input id="password" type="password" autocomplete="current-password">
@@ -31,7 +31,7 @@
 
 <div id="joinWrap" class="joinWrap hidden">
   <div class="joinCard">
-    <div class="brand"><div class="logo">S</div><div><h1>SchoolLink</h1><div class="muted">Сургуульдаа нэгдэх</div></div></div>
+    <div class="brand"><div class="logo">S</div><div><h1>SchoolHub</h1><div class="muted">Сургуульдаа нэгдэх</div></div></div>
     <p class="muted">Таны account бүртгэгдсэн байна. Сургуулиас авсан урилгын кодоо оруулна уу.</p>
     <label>Таны нэр</label><input id="joinFullName" placeholder="Овог нэр">
     <label>Урилгын код</label><input id="joinInviteCode" placeholder="Жишээ: A1B2C3D4" style="text-transform:uppercase">
@@ -43,9 +43,9 @@
 
 <div id="app" class="app hidden">
   <aside class="side">
-    <div class="brand"><div class="logo">S</div><div><h1>SchoolLink</h1><div class="muted">Live</div></div></div>
+    <div class="brand"><div class="logo">S</div><div><h1>SchoolHub</h1><div class="muted">Live</div></div></div>
     <nav id="nav" class="nav"></nav>
-    <div class="profile"><b id="profileName">SchoolLink</b><div id="profileMeta" class="muted"></div><div id="memberSchool" class="memberBadge hidden" style="margin-top:8px"></div></div>
+    <div class="profile"><b id="profileName">SchoolHub</b><div id="profileMeta" class="muted"></div><div id="memberSchool" class="memberBadge hidden" style="margin-top:8px"></div></div>
   </aside>
   <main class="main">
     <div class="top">
@@ -58,7 +58,7 @@
 
     <section id="owner" class="page active">
       <div class="grid">
-        <div class="card hero"><span class="pill">◆ PLATFORM OWNER</span><h3>SchoolLink-ийн бүх сургуулийг нэг самбараас удирдана.</h3><p id="ownerEmail"></p></div>
+        <div class="card hero"><span class="pill">◆ PLATFORM OWNER</span><h3>SchoolHub-ийн бүх сургуулийг нэг самбараас удирдана.</h3><p id="ownerEmail"></p></div>
         <div class="card quick"><div class="sectionTitle"><h3>Нэгдсэн үзүүлэлт</h3><span class="demoTag">LIVE</span></div><div id="ownerMetrics" class="metricGrid"></div></div>
         <div class="card full"><div class="sectionTitle"><h3>Сургуулиуд</h3><div style="display:flex;gap:8px"><button class="ghost" onclick="loadOwner()">↻ Шинэчлэх</button><button class="btn primary" onclick="openNewSchool()">＋ Шинэ сургууль</button></div></div><div id="ownerSchools" class="empty">Одоогоор сургууль алга байна.</div></div>
       </div>
