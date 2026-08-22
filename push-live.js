@@ -115,8 +115,14 @@ function slRoutePushLink(link){
   }
   return false;
 }
-function slStorePushLink(link){if(link)localStorage.setItem('schoollink_push_link',link)}
-function slTryPendingPush(){const link=localStorage.getItem('schoollink_push_link')||'';if(link&&slRoutePushLink(link))localStorage.removeItem('schoollink_push_link')}
+function slStorePushLink(link){if(link)localStorage.setItem('schoolhub_push_link',link)}
+function slTryPendingPush(){
+  const link=localStorage.getItem('schoolhub_push_link')||localStorage.getItem('schoollink_push_link')||'';
+  if(link&&slRoutePushLink(link)){
+    localStorage.removeItem('schoolhub_push_link');
+    localStorage.removeItem('schoollink_push_link');
+  }
+}
 function slReadPushQuery(){
   try{
     const url=new URL(location.href),link=url.searchParams.get('push');
@@ -126,7 +132,11 @@ function slReadPushQuery(){
 }
 
 if('serviceWorker'in navigator){
-  navigator.serviceWorker.addEventListener('message',event=>{if(event.data?.type==='schoollink-push-open'){slStorePushLink(event.data.link||'');setTimeout(slTryPendingPush,300)}});
+  navigator.serviceWorker.addEventListener('message',event=>{
+    if(event.data?.type==='schoolhub-push-open'||event.data?.type==='schoollink-push-open'){
+      slStorePushLink(event.data.link||'');setTimeout(slTryPendingPush,300)
+    }
+  });
 }
 
 if(typeof slEnsureNotificationUI==='function'){
