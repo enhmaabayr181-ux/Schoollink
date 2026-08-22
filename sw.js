@@ -1,4 +1,4 @@
-const CACHE='schoolhub-shell-v16';
+const CACHE='schoolhub-shell-v17';
 const SHELL=['/','/index.html','/style.css','/app.js','/parent-live.js','/teacher-pro.js','/teacher-fix.js','/parent-attachments.js','/admin-pro.js','/parent-pro.js','/calendar-live.js','/poll-live.js','/notifications-live.js','/pwa-install.js','/push-live.js','/stability-live.js','/portfolio-live.js','/teacher-sharing.js','/portfolio-sharing-patch.js','/visual-cards.js','/launch-polish.js','/billing-live.js','/manifest.webmanifest','/icons/schoolhub-192.svg','/icons/schoolhub-512.svg'];
 
 self.addEventListener('install',event=>{
@@ -16,7 +16,7 @@ self.addEventListener('fetch',event=>{
   if(req.method!=='GET')return;
   if(url.hostname.includes('supabase.co')||url.pathname.startsWith('/functions/')||url.pathname.includes('/auth/'))return;
   if(req.mode==='navigate'){
-    event.respondWith(fetch(req).then(res=>{
+    event.respondWith(fetch(req,{cache:'no-store'}).then(res=>{
       const copy=res.clone();caches.open(CACHE).then(c=>c.put('/index.html',copy)).catch(()=>{});return res;
     }).catch(()=>caches.match('/index.html')));
     return;
@@ -24,7 +24,7 @@ self.addEventListener('fetch',event=>{
   if(url.origin!==self.location.origin)return;
   const freshAsset=/\.(?:js|css|webmanifest)$/.test(url.pathname);
   if(freshAsset){
-    event.respondWith(fetch(req).then(res=>{
+    event.respondWith(fetch(req,{cache:'no-store'}).then(res=>{
       const copy=res.clone();caches.open(CACHE).then(c=>c.put(req,copy)).catch(()=>{});return res;
     }).catch(()=>caches.match(req)));
     return;
@@ -57,7 +57,7 @@ self.addEventListener('notificationclick',event=>{
     if(windows.length){
       const client=windows[0];
       await client.focus();
-      client.postMessage({type:'schoollink-push-open',link});
+      client.postMessage({type:'schoolhub-push-open',link});
       return;
     }
     const target=link?'/?push='+encodeURIComponent(link):'/';
