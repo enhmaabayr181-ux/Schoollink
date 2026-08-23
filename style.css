@@ -172,3 +172,15 @@ input:focus,select:focus,textarea:focus{border-color:rgba(115,87,255,.38);box-sh
   object-fit:contain;background:transparent;border-radius:0;box-shadow:none;
   filter:drop-shadow(0 18px 16px rgba(51,33,159,.28));
 }
+
+
+.sh-modern .sh-soft-card{min-height:150px;padding-right:112px}
+.sh-modern .sh-soft-card>*:not(.sh-card-art){position:relative;z-index:1}
+.sh-card-art{
+  position:absolute;right:14px;top:14px;width:86px;height:86px;object-fit:contain;
+  opacity:.62;pointer-events:none;filter:drop-shadow(0 10px 10px rgba(77,54,180,.18));
+}
+@media(max-width:540px){
+  .sh-modern .sh-soft-card{min-height:142px;padding-right:100px}
+  .sh-card-art{width:78px;height:78px;right:10px;top:12px;opacity:.72}
+}
