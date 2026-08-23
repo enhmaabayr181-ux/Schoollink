@@ -27,7 +27,7 @@
       brand.innerHTML='<span class="sh-brand-mark">S</span><b>SchoolHub</b>';
       top.prepend(brand);
     }
-    const role=window.currentRole||'owner';
+    const role=typeof currentRole!=='undefined'?currentRole:'owner';
     const heading=top?.querySelector(':scope > div:not(.sh-mobile-brand) h2');
     const eyebrow=top?.querySelector(':scope > div:not(.sh-mobile-brand) .muted');
     if(heading&&roleText[role]){
@@ -48,8 +48,19 @@
           icon.decoding='async';
           card.appendChild(icon);
         } else { const next=artFor(title); if(card.querySelector('.sh-hero-icon').getAttribute('src')!==next)card.querySelector('.sh-hero-icon').src=next; }
-      } else if(title && !card.classList.contains('quick')){
+      } else if(!card.classList.contains('quick')){
         card.classList.add('sh-soft-card');
+        const artTitle=title||card.textContent.trim().slice(0,80);
+        let art=card.querySelector(':scope > .sh-card-art');
+        if(!art){
+          art=document.createElement('img');
+          art.className='sh-card-art';
+          art.alt='';
+          art.decoding='async';
+          card.appendChild(art);
+        }
+        const src=artFor(artTitle);
+        if(art.getAttribute('src')!==src)art.src=src;
       }
     });
     const nav=document.getElementById('nav');
