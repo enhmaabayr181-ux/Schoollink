@@ -16,6 +16,15 @@
   function iconFor(text=''){
     return featureMap.find(([key])=>text.includes(key))?.[1] || '✦';
   }
+  function artFor(text=''){
+    if(/Чат|мессеж|харилц/i.test(text))return '/assets/chat.webp';
+    if(/Мэдээлэл|сануул|зарлал|notification/i.test(text))return '/assets/announcement.webp';
+    if(/Даалгавар|Ажлын сан|Portfolio|материал/i.test(text))return '/assets/assignment.webp';
+    if(/Ирц|Календарь|хуваарь|Өнөөдөр/i.test(text))return '/assets/calendar.webp';
+    if(/Тайлан|Analytics|ахиц|үзүүлэлт|metric/i.test(text))return '/assets/report.webp';
+    if(/Анги|Багш|Сурагч|хүүхэд|урилга|SchoolHub эрх/i.test(text))return '/assets/people.webp';
+    return '/assets/report.webp';
+  }
   function decorate(){
     const app=document.getElementById('app');
     if(!app||app.classList.contains('hidden'))return;
