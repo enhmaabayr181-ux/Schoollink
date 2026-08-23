@@ -27,7 +27,7 @@
       brand.innerHTML='<span class="sh-brand-mark">S</span><b>SchoolHub</b>';
       top.prepend(brand);
     }
-    const role=typeof currentRole!=='undefined'?currentRole:'owner';
+    const role=document.querySelector('.page.active')?.id||document.querySelector('.rolebar button.active')?.dataset.role||'owner';
     const heading=top?.querySelector(':scope > div:not(.sh-mobile-brand) h2');
     const eyebrow=top?.querySelector(':scope > div:not(.sh-mobile-brand) .muted');
     if(heading&&roleText[role]){
