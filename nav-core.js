@@ -83,7 +83,7 @@
       if(button.dataset.shCoreNav==='1')return;
       button.dataset.shCoreNav='1';
       button.onclick=async()=>{
-        const label=button.textContent.trim();
+        const label=button.dataset.shLabel||button.textContent.trim();
         if(currentRole==='parent')await handleParent(label,button);
         else if(currentRole==='admin')await handleAdmin(label,button);
         else if(currentRole==='owner')await handleOwner(label,button);
