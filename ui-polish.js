@@ -73,8 +73,23 @@
       btn.append(icon,text);
     });
   }
-  const observer=new MutationObserver(()=>requestAnimationFrame(decorate));
   const app=document.getElementById('app');
-  if(app)observer.observe(app,{subtree:true,childList:true,attributes:true,attributeFilter:['class']});
-  setTimeout(decorate,50);
+  const watch={subtree:true,childList:true,attributes:true,attributeFilter:['class']};
+  let queued=false;
+  const observer=new MutationObserver(()=>{
+    if(queued)return;
+    queued=true;
+    requestAnimationFrame(()=>{
+      queued=false;
+      observer.disconnect();
+      decorate();
+      if(app)observer.observe(app,watch);
+    });
+  });
+  if(app)observer.observe(app,watch);
+  setTimeout(()=>{
+    observer.disconnect();
+    decorate();
+    if(app)observer.observe(app,watch);
+  },50);
 })();
