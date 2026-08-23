@@ -45,7 +45,7 @@
           icon.className='sh-hero-icon';
           icon.textContent=iconFor(title);
           card.appendChild(icon);
-        } else card.querySelector('.sh-hero-icon').textContent=iconFor(title);
+        } else { const next=iconFor(title); if(card.querySelector('.sh-hero-icon').textContent!==next)card.querySelector('.sh-hero-icon').textContent=next; }
       } else if(title && !card.classList.contains('quick')){
         card.classList.add('sh-soft-card');
       }
