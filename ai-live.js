@@ -6,6 +6,7 @@
     #shAiPanel.hidden,#shAiButton.hidden{display:none}
     .shAiHead{padding:14px 16px;background:#6d5dfc;color:white;display:flex;align-items:center;justify-content:space-between}.shAiHead b{font-size:16px}.shAiHead button{border:0;background:transparent;color:white;font-size:24px;cursor:pointer}
     #shAiMessages{flex:1;overflow:auto;padding:14px;background:#faf9ff}.shAiMsg{max-width:88%;padding:10px 12px;border-radius:14px;margin:7px 0;white-space:pre-wrap;line-height:1.45}.shAiUser{margin-left:auto;background:#6d5dfc;color:white}.shAiBot{background:white;border:1px solid #e8e5ff;color:#25223a}
+    @media(max-width:760px){#shAiButton{right:14px;bottom:92px;padding:11px 14px}#shAiPanel{right:14px;bottom:148px;height:min(520px,calc(100vh - 180px))}}
     .shAiForm{padding:11px;border-top:1px solid #eee;display:flex;gap:8px}.shAiForm textarea{flex:1;min-height:42px;max-height:100px;resize:vertical;border:1px solid #ddd;border-radius:12px;padding:10px;font:inherit}.shAiForm button{border:0;border-radius:12px;background:#6d5dfc;color:white;padding:0 14px;font-weight:700;cursor:pointer}.shAiForm button:disabled{opacity:.55}
   `;
   document.head.appendChild(style);
