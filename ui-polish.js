@@ -41,11 +41,13 @@
       if(card.classList.contains('hero')){
         card.classList.add('sh-main-hero');
         if(!card.querySelector('.sh-hero-icon')){
-          const icon=document.createElement('div');
+          const icon=document.createElement('img');
           icon.className='sh-hero-icon';
-          icon.textContent=iconFor(title);
+          icon.src=artFor(title);
+          icon.alt='';
+          icon.decoding='async';
           card.appendChild(icon);
-        } else { const next=iconFor(title); if(card.querySelector('.sh-hero-icon').textContent!==next)card.querySelector('.sh-hero-icon').textContent=next; }
+        } else { const next=artFor(title); if(card.querySelector('.sh-hero-icon').getAttribute('src')!==next)card.querySelector('.sh-hero-icon').src=next; }
       } else if(title && !card.classList.contains('quick')){
         card.classList.add('sh-soft-card');
       }
