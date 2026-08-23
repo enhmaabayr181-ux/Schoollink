@@ -1,9 +1,9 @@
 (() => {
   function simplify(){
     const roleButton=document.querySelector('.rolebar [data-role="admin"]');
-    if(roleButton)roleButton.textContent='Сургуулийн самбар';
+    if(roleButton&&roleButton.textContent!=='Сургуулийн самбар')roleButton.textContent='Сургуулийн самбар';
     const invite=[...document.querySelectorAll('#inviteRole option')].find(x=>x.value==='admin');
-    if(invite)invite.textContent='Сургуулийн удирдах эрх';
+    if(invite&&invite.textContent!=='Сургуулийн удирдах эрх')invite.textContent='Сургуулийн удирдах эрх';
     const meta=document.getElementById('profileMeta');
     if(meta?.textContent==='admin')meta.textContent='Сургуулийн удирдах эрх';
     document.querySelectorAll('*').forEach(el=>{
@@ -22,6 +22,5 @@
       const h=document.createElement('div');h.className='shAccessHelp';h.innerHTML='<b>Нэг л account ашиглана.</b> Нэвтэрсний дараа SchoolHub таны сургууль, багш эсвэл эцэг эхийн эрхийг автоматаар танина.';auth.querySelector('p')?.after(h);
     }
   }
-  new MutationObserver(()=>{simplify();addHelp()}).observe(document.body,{childList:true,subtree:true});
-  setInterval(()=>{simplify();addHelp()},1800);setTimeout(()=>{simplify();addHelp()},300);
+  simplify();addHelp();document.addEventListener('DOMContentLoaded',()=>{simplify();addHelp()},{once:true});setTimeout(()=>{simplify();addHelp()},500);
 })();
