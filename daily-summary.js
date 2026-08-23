@@ -13,7 +13,7 @@
   const text=id=>document.getElementById(id)?.textContent?.trim()||'—';
   const count=(selector,root=document)=>root.querySelectorAll(selector).length;
   const safe=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
-  const dateLabel=()=>new Intl.DateTimeFormat('mn-MN',{timeZone:'Asia/Ulaanbaatar',year:'numeric',month:'long',day:'numeric',weekday:'long'}).format(new Date());
+  const dateLabel=()=>{const d=new Date(),days=['Ням','Даваа','Мягмар','Лхагва','Пүрэв','Баасан','Бямба'];return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')} · ${days[d.getDay()]}`;};
 
   function summary(role,section){
     if(role==='teacher')return {
@@ -53,7 +53,7 @@
     if(!section||!grid)return;
     const role=section.id,data=summary(role,section);
     let card=grid.querySelector(':scope > .shDaily');
-    if(!card){card=document.createElement('div');card.className='shDaily';const hero=grid.querySelector(':scope > .hero');hero?.after(card)||grid.prepend(card)}
+    if(!card){card=document.createElement('div');card.className='shDaily';const hero=grid.querySelector(':scope > .hero');if(hero)hero.after(card);else grid.prepend(card)}
     const signature=JSON.stringify(data);
     if(card.dataset.signature===signature)return;
     card.dataset.signature=signature;
