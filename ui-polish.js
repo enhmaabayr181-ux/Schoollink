@@ -75,7 +75,8 @@
     const nav=document.getElementById('nav');
     nav?.querySelectorAll('button').forEach(btn=>{
       if(btn.querySelector('.sh-nav-icon'))return;
-      const label=btn.textContent.trim();
+      const label=btn.dataset.shLabel||btn.textContent.trim();
+      btn.dataset.shLabel=label;
       btn.textContent='';
       const icon=document.createElement('span'); icon.className='sh-nav-icon'; icon.textContent=iconFor(label==='Нүүр'?'Dashboard':label);
       const text=document.createElement('span'); text.className='sh-nav-label'; text.textContent=label;
