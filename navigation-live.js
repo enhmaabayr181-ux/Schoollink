@@ -6,7 +6,14 @@
   const cleanLabel=button=>button.dataset.shLabel||button.querySelector('.sh-nav-label')?.textContent?.trim()||button.textContent.trim();
   const activeRole=()=>document.querySelector('.page.active')?.id||document.querySelector('.rolebar button.active')?.dataset.role||'owner';
   const activate=button=>nav.querySelectorAll('button').forEach(x=>x.classList.toggle('active',x===button));
-  const scrollTop=()=>window.scrollTo({top:0,behavior:'smooth'});
+  const scrollTop=()=>window.scrollTo({top:0,behavior:'auto'});
+  const focusSection=(section,label,target)=>{
+    const home=label==='Нүүр'||label==='Dashboard';
+    section?.classList.toggle('sh-subview',!home);
+    if(home){scrollTop();return}
+    requestAnimationFrame(()=>{(target||section)?.scrollIntoView({behavior:'auto',block:'start'})});
+  };
+  const focusStyle=document.createElement('style');focusStyle.textContent='.page.sh-subview>.grid>.hero,.page.sh-subview>.grid>.shDaily,.page.sh-subview>.grid>.shAlerts{display:none!important}.page.sh-subview>.grid>*{scroll-margin-top:10px}';document.head.appendChild(focusStyle);
 
   function showCard(sectionId,label){
     const section=document.getElementById(sectionId);
@@ -16,8 +23,8 @@
       owner:{'Сургуулиуд':'ownerSchools','Analytics':'ownerMetrics','Багц & төлбөр':'shBillingPanel'}
     };
     const id=maps[sectionId]?.[label];
-    const cards=[...section.querySelectorAll(':scope > .grid > .card')];
-    if(label==='Нүүр'||label==='Dashboard'){cards.forEach(c=>c.classList.remove('hidden'));scrollTop();return}
+    const items=[...section.querySelectorAll(':scope > .grid > *')];
+    if(label==='Нүүр'||label==='Dashboard'){items.forEach(c=>c.classList.remove('hidden'));focusSection(section,label);return}
     let target=id?document.getElementById(id)?.closest('.card'):null;
     if(!target){
       const keyMap={'Ангиуд':'Анги','Багш нар':'Багш','Сурагчид':'Сурагч','Тайлан':'Тайлан','Мэдээлэл':'Мэдээлэл'};
@@ -25,8 +32,8 @@
       const h=[...section.querySelectorAll('h3,h4')].find(x=>x.textContent.includes(key));
       target=h?.closest('.card')||null;
     }
-    if(target){cards.forEach(c=>c.classList.toggle('hidden',c!==target));target.classList.remove('hidden')}
-    scrollTop();
+    if(target){items.forEach(c=>c.classList.toggle('hidden',c!==target));target.classList.remove('hidden')}
+    focusSection(section,label,target);
   }
 
   function renderPreview(role,label){
@@ -73,7 +80,7 @@
     const label=cleanLabel(button),role=activeRole();
     activate(button);
     const rolebar=document.querySelector('.rolebar');
-    const ownerPreview=role!=='owner'&&rolebar&&!rolebar.classList.contains('hidden');
+    const ownerPreview=role!=='owner'&&rolebar&&getComputedStyle(rolebar).display!=='none';
     if(ownerPreview){
       event.preventDefault();
       event.stopImmediatePropagation();
@@ -85,6 +92,7 @@
         if(label==='Календарь'&&typeof window.shRenderCalendar==='function')await window.shRenderCalendar();
         else if(label==='Санал асуулга'&&typeof window.shRenderPolls==='function')await window.shRenderPolls();
         else if(typeof window.tpRenderView==='function')await window.tpRenderView(label);
+        focusSection(document.getElementById('teacher'),label,document.querySelector('#teacher>.grid>*:not(.hero)'));
       }else if(role==='parent'){
         if(label==='Календарь'&&typeof window.shRenderCalendar==='function')await window.shRenderCalendar();
         else if(label==='Санал асуулга'&&typeof window.shRenderPolls==='function')await window.shRenderPolls();
