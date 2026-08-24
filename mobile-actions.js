@@ -4,13 +4,10 @@
     .sh-modern .rolebar{display:none!important}
     .sh-modern .top{position:relative!important}
     #shMobileMenu{display:grid!important;place-items:center;width:42px;height:42px;min-width:42px;border:1px solid var(--line);background:#fff;color:#5d4bd3;border-radius:14px;font-size:22px;font-weight:900;cursor:pointer}
-    #shMobileActionsPanel{display:none;position:absolute;right:2px;top:54px;z-index:11020;padding:8px;background:rgba(255,255,255,.98);border:1px solid var(--line);border-radius:18px;box-shadow:0 16px 40px rgba(37,25,90,.18);gap:7px;align-items:center}
-    .sh-actions-open #shMobileActionsPanel{display:flex!important}
-    #shMobileActionsPanel>#shPrintOpen,#shMobileActionsPanel>#shHelpOpen,#shMobileActionsPanel>#shSearchOpen,#shMobileActionsPanel>.logout{position:static!important;display:grid!important;place-items:center!important;flex:0 0 42px!important;width:42px!important;height:42px!important;min-width:42px!important;margin:0!important;padding:0!important;font-size:0!important;border:1px solid var(--line)!important;border-radius:13px!important;background:#fff!important;color:#5d4bd3!important;cursor:pointer!important}
-    #shMobileActionsPanel>#shPrintOpen:after{content:"⇩";font-size:20px}
-    #shMobileActionsPanel>#shSearchOpen:after{content:"⌕";font-size:21px}
-    #shMobileActionsPanel>#shHelpOpen:after{content:"?";font-size:19px;font-weight:900}
-    #shMobileActionsPanel>.logout:after{content:"↪";font-size:20px;font-weight:900}
+    #shMobileActionsPanel{display:none;position:absolute;right:2px;top:54px;z-index:11020;padding:8px;background:rgba(255,255,255,.98);border:1px solid var(--line);border-radius:18px;box-shadow:0 16px 40px rgba(37,25,90,.18);gap:6px;align-items:stretch;min-width:210px}
+    .sh-actions-open #shMobileActionsPanel{display:grid!important}
+    #shMobileActionsPanel>#shPrintOpen,#shMobileActionsPanel>#shHelpOpen,#shMobileActionsPanel>#shSearchOpen,#shMobileActionsPanel>.logout{position:static!important;display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:10px!important;width:100%!important;height:44px!important;min-width:0!important;margin:0!important;padding:0 13px!important;font-size:14px!important;font-weight:800!important;border:1px solid var(--line)!important;border-radius:13px!important;background:#fff!important;color:#5d4bd3!important;cursor:pointer!important}
+    #shMobileActionsPanel>#shPrintOpen:after,#shMobileActionsPanel>#shSearchOpen:after,#shMobileActionsPanel>#shHelpOpen:after,#shMobileActionsPanel>.logout:after{content:none!important}
     @media(max-width:900px){.sh-modern .top>div:last-child{justify-content:flex-end!important}}
   `;
   document.head.appendChild(style);
