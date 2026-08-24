@@ -1,6 +1,6 @@
 let shBillingReady=false;
 const SH_BANK={bank:'Хаан банк',name:'Б.Энхмаа',account:'5301485964'};
-const SH_PLANS={monthly:{label:'Сарын эрх',amount:19900},yearly:{label:'Жилийн эрх',amount:199000}};
+const SH_PLANS={monthly:{label:'Сарын эрх',amount:15000},yearly:{label:'Жилийн эрх',amount:150000}};
 function shMoney(n){return new Intl.NumberFormat('mn-MN').format(Number(n||0))+'₮'}
 async function shBillingCall(body){const {data,error}=await sb.functions.invoke('schoolhub-telegram',{body});if(error)throw new Error(error.message||'Төлбөрийн API алдаа');if(data?.error)throw new Error(data.error);return data}
 
