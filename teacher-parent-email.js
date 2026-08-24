@@ -1,17 +1,108 @@
 (() => {
-  let targetStudent=null;
-  function ensureModal(){
-    if(document.getElementById('shParentEmailModal'))return;
-    const d=document.createElement('div');d.id='shParentEmailModal';d.className='modal hidden';
-    d.innerHTML='<div class="modalCard" style="max-width:520px"><div class="modalTop"><div><div class="muted">ЭЦЭГ ЭХ ХОЛБОХ</div><h3 id="shParentEmailTitle">Gmail урилга</h3></div><button class="close" id="shParentEmailClose">×</button></div><p class="muted">Эцэг эхийн Gmail рүү нэг удаагийн нэвтрэх холбоос очно. Тэр холбоосоор ороход хүүхэд автоматаар холбогдоно.</p><label>Эцэг эхийн нэр</label><input id="shParentName" placeholder="Овог нэр"><label>Gmail хаяг</label><input id="shParentEmail" type="email" inputmode="email" placeholder="parent@gmail.com"><label>Хэн болох</label><select id="shParentRelation"><option value="mother">Ээж</option><option value="father">Аав</option><option value="guardian">Асран хамгаалагч</option></select><button class="btn primary" id="shSendParentEmail" style="width:100%;margin-top:16px">Gmail урилга илгээх</button><div id="shParentEmailStatus" class="status"></div></div>';
-    document.body.appendChild(d);document.getElementById('shParentEmailClose').onclick=()=>d.classList.add('hidden');document.getElementById('shSendParentEmail').onclick=send;
+  let targetStudent = null;
+
+  function ensureModal() {
+    if (document.getElementById('shParentInviteModal')) return;
+    const modal = document.createElement('div');
+    modal.id = 'shParentInviteModal';
+    modal.className = 'modal hidden';
+    modal.innerHTML = `
+      <div class="modalCard" style="max-width:520px">
+        <div class="modalTop">
+          <div>
+            <div class="muted">ЭЦЭГ ЭХ ХОЛБОХ</div>
+            <h3 id="shParentInviteTitle">Урилгын код</h3>
+          </div>
+          <button class="close" id="shParentInviteClose">×</button>
+        </div>
+        <p class="muted">Нэг удаагийн код үүсгээд эцэг эхэд Messenger, SMS эсвэл өөрийн тохиромжтой аргаар өгнө. И-мэйл шаардлагагүй.</p>
+        <button class="btn primary" id="shCreateParentCode" style="width:100%;margin-top:8px">Урилгын код үүсгэх</button>
+        <div id="shParentInviteResult" class="hidden" style="margin-top:16px">
+          <div class="muted" style="text-align:center">Эцэг эхэд өгөх код</div>
+          <div id="shParentInviteCode" class="codeBox" style="margin-top:8px;text-align:center;font-size:28px;letter-spacing:4px"></div>
+          <div class="authActions" style="margin-top:12px">
+            <button class="btn secondary" id="shCopyParentCode">Код хуулах</button>
+            <button class="btn secondary" id="shShareParentCode">Хуваалцах</button>
+          </div>
+          <p class="muted" style="font-size:12px;margin-top:10px">Код нэг удаа ашиглагдана. Эцэг эх SchoolHub-д өөрийн нэр болон энэ кодыг оруулж холбогдоно.</p>
+        </div>
+        <div id="shParentInviteStatus" class="status"></div>
+      </div>`;
+    document.body.appendChild(modal);
+    document.getElementById('shParentInviteClose').onclick = () => modal.classList.add('hidden');
+    document.getElementById('shCreateParentCode').onclick = createCode;
+    document.getElementById('shCopyParentCode').onclick = copyCode;
+    document.getElementById('shShareParentCode').onclick = shareCode;
   }
-  window.teacherCreateParentInvite=function(studentId,studentName){
-    ensureModal();targetStudent={id:studentId,name:studentName};document.getElementById('shParentEmailTitle').textContent=studentName+' · Эцэг эх холбох';document.getElementById('shParentName').value='';document.getElementById('shParentEmail').value='';const s=document.getElementById('shParentEmailStatus');s.textContent='';s.className='status';document.getElementById('shParentEmailModal').classList.remove('hidden');setTimeout(()=>document.getElementById('shParentEmail').focus(),50);
+
+  window.teacherCreateParentInvite = function (studentId, studentName) {
+    ensureModal();
+    targetStudent = { id: studentId, name: studentName };
+    document.getElementById('shParentInviteTitle').textContent = studentName + ' · Эцэг эх холбох';
+    document.getElementById('shParentInviteResult').classList.add('hidden');
+    document.getElementById('shParentInviteCode').textContent = '';
+    const status = document.getElementById('shParentInviteStatus');
+    status.textContent = '';
+    status.className = 'status';
+    const button = document.getElementById('shCreateParentCode');
+    button.disabled = false;
+    button.textContent = 'Урилгын код үүсгэх';
+    document.getElementById('shParentInviteModal').classList.remove('hidden');
   };
-  async function send(){
-    const email=document.getElementById('shParentEmail').value.trim().toLowerCase(),name=document.getElementById('shParentName').value.trim(),relationship=document.getElementById('shParentRelation').value,status=document.getElementById('shParentEmailStatus'),button=document.getElementById('shSendParentEmail');
-    try{if(!targetStudent)throw new Error('Сурагч сонгоно уу.');if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))throw new Error('Gmail хаягаа зөв оруулна уу.');button.disabled=true;showStatus(status,'Gmail урилга илгээж байна…');const data=await schoolWorkflowCall({action:'invite_parent_by_email',student_id:targetStudent.id,email,parent_name:name,relationship});showStatus(status,data.email+' рүү урилга илгээгдлээ ✅ 24 цагийн дотор холбоосоо нээнэ.','ok');setTimeout(()=>document.getElementById('shParentEmailModal').classList.add('hidden'),1400)}catch(e){showStatus(status,e.message||'Урилга илгээхэд алдаа гарлаа.','err')}finally{button.disabled=false}
+
+  async function createCode() {
+    const status = document.getElementById('shParentInviteStatus');
+    const button = document.getElementById('shCreateParentCode');
+    try {
+      if (!targetStudent) throw new Error('Сурагч сонгоно уу.');
+      button.disabled = true;
+      showStatus(status, 'Код үүсгэж байна…');
+      const data = await schoolWorkflowCall({
+        action: 'create_parent_invite',
+        student_id: targetStudent.id
+      });
+      document.getElementById('shParentInviteCode').textContent = data.code;
+      document.getElementById('shParentInviteResult').classList.remove('hidden');
+      button.textContent = 'Шинэ код үүсгэх';
+      showStatus(status, 'Урилгын код бэлэн ✅', 'ok');
+    } catch (error) {
+      showStatus(status, error.message || 'Код үүсгэхэд алдаа гарлаа.', 'err');
+    } finally {
+      button.disabled = false;
+    }
   }
+
+  function inviteText() {
+    const code = document.getElementById('shParentInviteCode').textContent.trim();
+    return targetStudent && code
+      ? targetStudent.name + '-ийн SchoolHub урилгын код: ' + code + '. SchoolHub-д нэр болон энэ кодоо оруулж холбогдоно уу.'
+      : '';
+  }
+
+  async function copyCode() {
+    const code = document.getElementById('shParentInviteCode').textContent.trim();
+    if (!code) return;
+    try {
+      await navigator.clipboard.writeText(code);
+      showStatus(document.getElementById('shParentInviteStatus'), 'Код хуулагдлаа ✅', 'ok');
+    } catch (_) {
+      window.prompt('Кодоо хуулна уу:', code);
+    }
+  }
+
+  async function shareCode() {
+    const text = inviteText();
+    if (!text) return;
+    if (navigator.share) {
+      try { await navigator.share({ title: 'SchoolHub урилга', text }); return; } catch (_) {}
+    }
+    try {
+      await navigator.clipboard.writeText(text);
+      showStatus(document.getElementById('shParentInviteStatus'), 'Урилгын тайлбар хуулагдлаа ✅', 'ok');
+    } catch (_) {
+      window.prompt('Энэ мэдээллийг эцэг эхэд илгээнэ үү:', text);
+    }
+  }
+
   ensureModal();
 })();
