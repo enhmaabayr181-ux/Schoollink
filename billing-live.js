@@ -5,8 +5,8 @@ function shMoney(n){return new Intl.NumberFormat('mn-MN').format(Number(n||0))+'
 async function shBillingCall(body){const {data,error}=await sb.functions.invoke('schoolhub-telegram',{body});if(error)throw new Error(error.message||'Төлбөрийн API алдаа');if(data?.error)throw new Error(data.error);return data}
 
 async function shRenderBilling(){
-  if(!session?.user||membership?.role!=='admin')return;
-  const section=$('admin');if(!section)return;
+  if(!session?.user||!['admin','teacher'].includes(membership?.role))return;
+  const section=$(membership.role==='teacher'?'teacher':'admin');if(!section)return;
   let payments=[];try{const r=await shBillingCall({action:'status',school_id:membership.school_id});payments=r.payments||[]}catch{}
   const schoolName=membership.schools?.name||'Сургууль',schoolCode=membership.schools?.code||'';
   const ref=`${schoolCode}-${String(session.user.email||'').toLowerCase()}`;
@@ -21,7 +21,7 @@ async function shRenderBilling(){
 window.shRenderBilling=shRenderBilling;
 window.shPaymentDone=async plan=>{const status=$('shPaymentStatus');try{const p=SH_PLANS[plan];if(!p)throw new Error('Багц буруу байна.');if(!confirm(`${p.label} · ${shMoney(p.amount)} төлбөр хийсэн гэж мэдэгдэх үү?`))return;showStatus(status,'Төлбөрийн хүсэлт илгээж байна…');const d=await shBillingCall({action:'payment',school_id:membership.school_id,plan});showStatus(status,d.duplicate?'Энэ төлбөрийн хүсэлт аль хэдийн илгээгдсэн байна. Шалгаж байна ⏳':'Төлбөрийн хүсэлт илгээгдлээ ✅ Шалгасны дараа эрх идэвхжинэ.','ok');setTimeout(shRenderBilling,900)}catch(e){showStatus(status,e.message,'err')}};
 
-function shBindBillingNav(){if(!membership||membership.role!=='admin'||!$('nav'))return;let b=$('shBillingNav');if(!b){b=document.createElement('button');b.id='shBillingNav';b.textContent='Төлбөр';$('nav').appendChild(b)}b.onclick=async()=>{[...$('nav').querySelectorAll('button')].forEach(x=>x.classList.toggle('active',x===b));await shRenderBilling()}}
+function shBindBillingNav(){if(!membership||!['admin','teacher'].includes(membership.role)||!$('nav'))return;let b=$('shBillingNav');if(!b){b=document.createElement('button');b.id='shBillingNav';b.textContent='Төлбөр';$('nav').appendChild(b)}b.onclick=async()=>{[...$('nav').querySelectorAll('button')].forEach(x=>x.classList.toggle('active',x===b));await shRenderBilling()}}
 
 // Notify owner after a successful self-service school registration.
 if(typeof onboardingCall==='function'){
