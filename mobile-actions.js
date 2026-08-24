@@ -1,6 +1,7 @@
 (() => {
   const style=document.createElement('style');
   style.textContent=`
+  .sh-modern .rolebar{display:none!important}
   #shMobileMenu{display:none}
   #shMobileActionsPanel{display:contents}
   @media(max-width:900px){
