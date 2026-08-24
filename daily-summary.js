@@ -57,7 +57,7 @@
     const signature=JSON.stringify(data);
     if(card.dataset.signature===signature)return;
     card.dataset.signature=signature;
-    card.innerHTML='<div class="shDailyTop"><div><div class="muted">ӨНӨӨДӨР</div><h3>'+safe(data.title)+'</h3></div><div class="shDailyDate">'+safe(dateLabel())+'</div></div><div class="shDailyGrid">'+data.items.map(x=>'<div class="shDailyItem"><span>'+safe(x[0])+'</span><b>'+safe(x[1])+'</b></div>').join('')+'</div><div class="shDailyNote"><span>'+safe(data.note)+'</span><button type="button" data-sh-daily-jump="'+safe(data.jump)+'">Нээх →</button></div>';
+    card.innerHTML='<div class="shDailyTop"><div><div class="muted">ӨНӨӨДӨР</div><h3>'+safe(data.title)+'</h3></div><div class="shDailyDate">'+safe(dateLabel())+'</div></div><div class="shDailyGrid">'+data.items.map(x=>'<div class="shDailyItem"><span>'+safe(x[0])+'</span><b>'+safe(x[1])+'</b></div>').join('')+'</div>'+(role==='teacher'?'':'<div class="shDailyNote"><span>'+safe(data.note)+'</span><button type="button" data-sh-daily-jump="'+safe(data.jump)+'">Нээх →</button></div>');
   }
   document.addEventListener('click',event=>{
     const button=event.target.closest('[data-sh-daily-jump]');
