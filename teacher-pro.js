@@ -5,7 +5,7 @@ function tpFmt(v){if(!v)return '';try{return new Date(v).toLocaleString('mn-MN',
 function tpFileIcon(mime=''){return mime.startsWith('image/')?'🖼️':mime.includes('pdf')?'📕':mime.includes('word')?'📘':mime.includes('sheet')||mime.includes('excel')?'📗':mime.includes('presentation')?'📙':'📎'}
 async function tpWorkflow(body){const {data,error}=await sb.functions.invoke('schoollink-school-workflow',{body});if(error)throw new Error(error.message||'School workflow алдаа');if(data?.error)throw new Error(data.error);return data}
 async function tpChat(body){const {data,error}=await sb.functions.invoke('schoollink-chat',{body});if(error)throw new Error(error.message||'Chat API алдаа');if(data?.error&&!data?.needs_parent)throw new Error(data.error);return data}
-async function tpContext(){const d=await tpWorkflow({action:'context'});teacherCtx=d;if(!d.access_open)throw new Error('SchoolLink ашиглах эрх идэвхжээгүй байна.');if(d.class){teacherData=teacherData||{};teacherData.schoolId=membership.school_id;teacherData.cls=d.class;teacherData.students=d.students||[]}return d}
+async function tpContext(){const d=await tpWorkflow({action:'context',class_id:window.shSelectedTeacherClassId||localStorage.getItem('schoolhub.teacherClassId')||''});teacherCtx=d;if(!d.access_open)throw new Error('SchoolLink ашиглах эрх идэвхжээгүй байна.');if(d.class){teacherData=teacherData||{};teacherData.schoolId=membership.school_id;teacherData.cls=d.class;teacherData.students=d.students||[]}return d}
 async function tpOpenFile(path,bucket='assignment-files'){const {data,error}=await sb.storage.from(bucket).createSignedUrl(path,3600);if(error)throw error;window.open(data.signedUrl,'_blank','noopener')}
 window.tpOpenFile=tpOpenFile;
 
