@@ -2,12 +2,13 @@
   const style=document.createElement('style');
   style.id='shMobileEmergencyFix';
   style.textContent=`
-  @media(max-width:1100px){
+  /* True mobile/tablet layout only. */
+  @media(max-width:900px){
     body.sh-modern{padding-bottom:112px!important}
     .sh-modern .app{padding:12px 12px 0!important;overflow:visible!important}
     .sh-modern .main{overflow:visible!important;min-width:0!important}
     .sh-modern .top{display:flex!important;flex-direction:column!important;gap:10px!important;position:relative!important;padding:4px 2px 14px!important;min-height:0!important}
-    .sh-modern .sh-mobile-brand{order:1;min-height:44px;padding-right:190px}
+    .sh-modern .sh-mobile-brand{display:flex!important;order:1;min-height:44px;padding-right:190px}
     .sh-modern .top>div:not(.sh-mobile-brand):not(:last-child){order:3;width:100%!important;padding:0!important}
     .sh-modern .top>div:last-child{order:2;position:static!important;inset:auto!important;width:100%!important;display:flex!important;flex-wrap:wrap!important;align-items:center!important;justify-content:flex-end!important;gap:8px!important;margin:0!important}
     .sh-modern .top h2{margin:4px 0 0!important;padding:0!important;font-size:26px!important;line-height:1.12!important}
@@ -19,10 +20,41 @@
     .sh-modern .grid{position:relative!important;z-index:1!important}
     .sh-modern .side{display:block!important;position:fixed!important;left:10px!important;right:10px!important;bottom:max(10px,env(safe-area-inset-bottom))!important;top:auto!important;height:76px!important;z-index:10000!important;overflow:hidden!important;pointer-events:auto!important}
     .sh-modern .nav{display:flex!important;height:62px!important;overflow-x:auto!important;overflow-y:hidden!important;touch-action:pan-x!important;pointer-events:auto!important;-webkit-overflow-scrolling:touch!important}
-    .sh-modern .nav button{position:relative!important;z-index:2!important;flex:0 0 82px!important;min-width:82px!important;height:60px!important;pointer-events:auto!important;touch-action:manipulation!important;cursor:pointer!important}
+    .sh-modern .nav button{position:relative!important;z-index:2!important;flex:0 0 82px!important;min-width:82px!important;max-width:112px!important;height:60px!important;pointer-events:auto!important;touch-action:manipulation!important;cursor:pointer!important}
     #shAiButton{right:14px!important;bottom:102px!important;z-index:9000!important;max-width:150px!important}
     #shAiPanel{right:12px!important;bottom:158px!important;z-index:11000!important;height:min(500px,calc(100vh - 190px))!important}
   }
+
+  /* Windows display scaling often gives laptops a 901–1100px CSS viewport.
+     Keep that range in the normal desktop layout instead of forcing mobile UI. */
+  @media(min-width:901px) and (max-width:1100px){
+    body.sh-modern{padding-bottom:0!important}
+    .sh-modern .app{display:grid!important;grid-template-columns:218px minmax(0,1fr)!important;gap:20px!important;max-width:1480px!important;margin:auto!important;padding:20px!important;min-height:100vh!important;overflow:visible!important}
+    .sh-modern .main{width:auto!important;min-width:0!important;padding-bottom:20px!important;overflow:visible!important}
+    .sh-modern .side{display:flex!important;position:sticky!important;left:auto!important;right:auto!important;bottom:auto!important;top:20px!important;height:calc(100vh - 40px)!important;z-index:auto!important;border-radius:30px!important;padding:16px!important;overflow:hidden!important;flex-direction:column!important}
+    .sh-modern .side .brand{display:flex!important}
+    .sh-modern .side .profile{display:block!important}
+    .sh-modern .nav{display:grid!important;height:auto!important;gap:5px!important;overflow-x:hidden!important;overflow-y:auto!important;padding-right:2px!important;touch-action:auto!important}
+    .sh-modern .nav button{display:block!important;position:static!important;flex:none!important;width:auto!important;min-width:0!important;max-width:none!important;height:auto!important;padding:11px 12px!important;text-align:left!important;font-size:inherit!important;border-radius:15px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+    .sh-modern .nav button.active{background:linear-gradient(135deg,rgba(115,87,255,.13),rgba(154,135,255,.09))!important;color:#6247ee!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.7)!important}
+    .sh-modern .sh-nav-icon{display:none!important}
+    .sh-modern .sh-nav-label{display:block!important;font-size:inherit!important;max-width:none!important}
+    .sh-modern .sh-mobile-brand{display:none!important}
+    .sh-modern .top{display:flex!important;justify-content:space-between!important;align-items:center!important;flex-direction:row!important;gap:16px!important;padding:6px 2px 18px!important;position:sticky!important;top:0!important;min-height:0!important}
+    .sh-modern .top>div:not(.sh-mobile-brand):not(:last-child){order:initial!important;width:auto!important;padding:0!important}
+    .sh-modern .top>div:last-child{order:initial!important;position:static!important;width:auto!important;display:flex!important;flex-wrap:wrap!important;align-items:center!important;justify-content:flex-start!important;gap:8px!important;margin:0!important}
+    .sh-modern .top h2{margin:0!important;padding:0!important;font-size:30px!important;line-height:normal!important}
+    .sh-modern .rolebar{order:initial!important;flex:0 1 auto!important;width:auto!important;max-width:none!important;display:flex!important;overflow:visible!important;white-space:normal!important;padding:4px!important}
+    .sh-modern .rolebar button{min-height:0!important;padding:8px 11px!important;font-size:inherit!important}
+    .sh-modern #shPrintOpen,.sh-modern #shHelpOpen,.sh-modern #shSearchOpen,.sh-modern .logout{order:initial!important;position:static!important;display:inline-grid!important;flex:0 0 auto!important;width:auto!important;height:auto!important;min-width:0!important;margin:0!important}
+    .sh-modern .grid{display:grid!important;grid-template-columns:repeat(12,minmax(0,1fr))!important;gap:16px!important}
+    .sh-modern .hero{grid-column:span 8!important}
+    .sh-modern .quick{grid-column:span 4!important}
+    .sh-modern .wide{grid-column:span 8!important}
+    .sh-modern .narrow{grid-column:span 4!important}
+    .sh-modern .full{grid-column:1/-1!important}
+  }
+
   @media(max-width:430px){
     .sh-modern .sh-mobile-brand{padding-right:145px!important;font-size:20px!important}
     .sh-modern .top h2{font-size:24px!important}
@@ -31,6 +63,7 @@
     .sh-modern .sh-main-hero h3{font-size:27px!important}
   }`;
   document.head.appendChild(style);
+
   function repair(){
     const nav=document.getElementById('nav');
     if(nav){nav.style.pointerEvents='auto';[...nav.querySelectorAll('button')].forEach(b=>{b.style.pointerEvents='auto';b.disabled=false})}
