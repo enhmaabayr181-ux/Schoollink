@@ -18,11 +18,13 @@
     const hero=byId('teacherHeroTitle')?.closest('.hero');
     if(!hero||byId('teacherClassSelect'))return;
     hero.insertAdjacentHTML('beforeend',`<div class="teacherClassBar"><div class="field"><label for="teacherClassSelect">Одоо ажиллах анги</label><select id="teacherClassSelect"><option value="">Анги ачаалж байна…</option></select></div><div><span id="teacherRoleChip" class="teacherRoleChip">👩‍🏫 Багш</span><div id="teacherClassMeta" class="classMeta">Нэг бүртгэлээр олон ангид ажиллана</div></div></div>`);
-    byId('teacherClassSelect').addEventListener('change',event=>{
+    byId('teacherClassSelect').addEventListener('change',async event=>{
       const id=event.target.value;
       window.shSelectedTeacherClassId=id;
       if(id)localStorage.setItem('schoolhub.teacherClassId',id);
-      window.loadTeacherDashboard?.();
+      const activeView=typeof teacherCurrentView==='string'?teacherCurrentView:'Нүүр';
+      if(activeView!=='Нүүр'&&typeof window.tpRenderView==='function')await window.tpRenderView(activeView);
+      else await window.loadTeacherDashboard?.();
     });
   }
 
