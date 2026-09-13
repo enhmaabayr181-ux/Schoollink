@@ -71,7 +71,7 @@ input:focus,select:focus,textarea:focus{border-color:rgba(115,87,255,.38);box-sh
 .codeBox{padding:17px;border-radius:20px;background:linear-gradient(135deg,#181920,#282937);color:#fff;text-align:center;font-size:28px;font-weight:900;letter-spacing:2px;margin-top:12px}
 .tabs{display:flex;gap:6px;flex-wrap:wrap;margin:15px 0}.tabs button{border:1px solid transparent;border-radius:999px;padding:9px 13px;font-weight:800;background:#f1f2f6;color:#666;cursor:pointer}.tabs button.active{background:var(--v);color:#fff;box-shadow:0 6px 15px rgba(115,87,255,.18)}.setupPane{display:none}.setupPane.active{display:block}
 
-@media(max-width:900px){
+@media(max-width:1100px){
   body{padding-bottom:86px;background:radial-gradient(650px 420px at 50% -8%,rgba(141,119,255,.16),transparent 62%),var(--bg)}
   .app{grid-template-columns:1fr;padding:10px 10px 0;gap:10px;min-height:auto}.main{padding-bottom:0}
   .side{position:fixed;left:10px;right:10px;bottom:10px;top:auto;height:68px;z-index:45;border-radius:22px;padding:7px 8px;background:rgba(255,255,255,.82);box-shadow:0 16px 50px rgba(35,39,63,.16);overflow:hidden}
@@ -123,7 +123,7 @@ input:focus,select:focus,textarea:focus{border-color:rgba(115,87,255,.38);box-sh
 .sh-nav-icon{display:none}
 .sh-nav-label{display:block}
 
-@media(max-width:900px){
+@media(max-width:1100px){
   .sh-modern{padding-bottom:104px}
   .sh-modern .app{max-width:760px;padding:18px 16px 0}
   .sh-modern .main{width:100%}
