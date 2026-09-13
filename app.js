@@ -49,9 +49,11 @@ document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>{document.que
 async function loadTeacherDashboard(){
   if(!session||!membership||membership.role!=='teacher')return;
   try{
-    const schoolId=membership.school_id;
-    const {data:classes,error:classErr}=await sb.from('classes').select('id,name,grade,section,academic_year,homeroom_teacher_id').eq('school_id',schoolId).eq('homeroom_teacher_id',session.user.id).order('created_at',{ascending:true});if(classErr)throw classErr;
-    const cls=classes?.[0]||null;
+    const schoolId=membership.school_id,selectedClassId=window.shSelectedTeacherClassId||localStorage.getItem('schoolhub.teacherClassId')||'';
+    const {data:ctx,error:contextErr}=await sb.functions.invoke('schoollink-school-workflow',{body:{action:'context',class_id:selectedClassId}});if(contextErr)throw contextErr;if(ctx?.error)throw new Error(ctx.error);
+    const classes=ctx?.classes||[],cls=ctx?.class||null;
+    if(cls){window.shSelectedTeacherClassId=cls.id;localStorage.setItem('schoolhub.teacherClassId',cls.id)}
+    window.shRenderTeacherClassPicker?.(classes,cls);
     if(!cls){teacherData={schoolId,cls:null,students:[],attendance:[],assignments:[]};$('teacherHeroTitle').textContent='Танд анги хараахан холбогдоогүй байна.';$('teacherHeroMeta').textContent='Owner багшийн урилгыг ангитай холбож үүсгэнэ.';$('teacherStudents').className='empty';$('teacherStudents').textContent='Анги холбогдоогүй.';$('teacherAssignments').className='empty';$('teacherAssignments').textContent='Даалгавар алга.';$('teacherAttendance').textContent='—';$('teacherStudentCount').textContent='0';$('teacherAttentionCount').textContent='0';$('teacherAssignmentCount').textContent='0';return}
     const date=new Date().toISOString().slice(0,10);
     const [{data:students,error:studentErr},{data:attendance,error:attErr},{data:assignments,error:assErr}]=await Promise.all([
@@ -61,7 +63,7 @@ async function loadTeacherDashboard(){
     ]);if(studentErr||attErr||assErr)throw studentErr||attErr||assErr;
     teacherData={schoolId,cls,students:students||[],attendance:attendance||[],assignments:assignments||[]};
     const attMap=new Map((attendance||[]).map(a=>[a.student_id,a])),present=(attendance||[]).filter(a=>a.status==='present').length,attention=(attendance||[]).filter(a=>['absent','late'].includes(a.status)).length;
-    $('teacherHeroTitle').textContent=`${cls.name} анги · Өнөөдрийн ажил`;$('teacherHeroMeta').textContent=`${cls.academic_year||''}${cls.grade?' · '+cls.grade+'-р анги':''}`;$('teacherStudentCount').textContent=students?.length||0;$('teacherAttendance').textContent=students?.length?`${present}/${students.length}`:'—';$('teacherAttentionCount').textContent=attention;$('teacherAssignmentCount').textContent=assignments?.length||0;
+    $('teacherHeroTitle').textContent=`${cls.name} анги · Өнөөдрийн ажил`;$('teacherHeroMeta').textContent=`${cls.academic_year||''}${cls.grade?' · '+cls.grade+'-р анги':''}${classes.length>1?' · Нийт '+classes.length+' анги':''}`;$('teacherStudentCount').textContent=students?.length||0;$('teacherAttendance').textContent=students?.length?`${present}/${students.length}`:'—';$('teacherAttentionCount').textContent=attention;$('teacherAssignmentCount').textContent=assignments?.length||0;
     $('teacherStudents').className=students?.length?'list':'empty';$('teacherStudents').innerHTML=students?.length?students.map(st=>{const a=attMap.get(st.id),lab=a?({present:'Ирсэн',absent:'Тасалсан',late:'Хоцорсон',excused:'Чөлөөтэй'}[a.status]||a.status):'Бүртгээгүй';return `<div class="row"><div><b>${esc(st.full_name)}</b><small> · ${esc(st.student_code||'кодгүй')}</small></div><span class="pill">${lab}</span></div>`}).join(''):'Сурагч алга.';
     $('teacherAssignments').className=assignments?.length?'list':'empty';$('teacherAssignments').innerHTML=assignments?.length?assignments.map(a=>`<div class="row"><div><b>${esc(a.subject)} · ${esc(a.title)}</b><small>${a.due_at?' · '+new Date(a.due_at).toLocaleString('mn-MN'):''}</small></div></div>`).join(''):'Даалгавар алга.';
   }catch(e){$('teacherStudents').className='status show err';$('teacherStudents').textContent='Багшийн мэдээлэл: '+e.message}
