@@ -2,7 +2,7 @@
   const style=document.createElement('style');
   style.id='shMobileEmergencyFix';
   style.textContent=`
-  @media(max-width:900px){
+  @media(max-width:1100px){
     body.sh-modern{padding-bottom:112px!important}
     .sh-modern .app{padding:12px 12px 0!important;overflow:visible!important}
     .sh-modern .main{overflow:visible!important;min-width:0!important}
