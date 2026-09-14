@@ -23,4 +23,12 @@
     }
   }
   simplify();setTimeout(simplify,800);
+
+  // Load the complete school-management workspace without changing the existing app boot order.
+  if(!document.querySelector('script[data-sh-admin-center]')){
+    const adminScript=document.createElement('script');
+    adminScript.src='/admin-center.js?v=01d69da';
+    adminScript.dataset.shAdminCenter='1';
+    document.body.appendChild(adminScript);
+  }
 })();
