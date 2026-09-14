@@ -9,6 +9,8 @@
     #authWrap .shTeacherLoginNote b{display:block;color:#35266f;font-size:13px;margin-bottom:3px}
     #authWrap .brand .logo{width:56px!important;height:56px!important;padding:0!important;overflow:hidden!important;background:transparent!important;border-radius:16px!important}
     #authWrap .brand .logo img{display:block;width:100%;height:100%;object-fit:contain}
+    .shOwnerAdminInvite{background:#f1edff!important;color:#6247ee!important;border-color:rgba(115,87,255,.12)!important}
+    .shOwnerAdminHint{margin-top:9px;padding:10px 12px;border-radius:14px;background:#f8f6ff;color:#655b87;font-size:12px;line-height:1.45}
   `;
   document.head.appendChild(style);
   function simplify(){
@@ -31,4 +33,40 @@
     adminScript.dataset.shAdminCenter='1';
     document.body.appendChild(adminScript);
   }
+
+  function installOwnerAdminInviteFlow(){
+    if(window.shOwnerAdminInviteReady||typeof renderOwnerData!=='function')return;
+    window.shOwnerAdminInviteReady=true;
+
+    renderOwnerData=function(){
+      const m=ownerData?.metrics||{};
+      $('ownerMetrics').innerHTML=[['Сургууль',m.schools],['Хэрэглэгч',m.users],['Сурагч',m.students],['Багш',m.teachers],['Эцэг эх',m.parents],['Анги',m.classes]].map(x=>`<div class="metric"><span>${x[0]}</span><b>${x[1]||0}</b></div>`).join('');
+      const rows=ownerData?.schools||[];
+      $('ownerSchools').className=rows.length?'':'empty';
+      $('ownerSchools').innerHTML=rows.length?rows.map(s=>`<div class="ownerSchool"><div><h4>${esc(s.name)}</h4><div class="muted">${esc(s.code)} · ${s.counts?.classes||0} анги · ${s.counts?.students||0} сурагч · ${s.counts?.teachers||0} багш</div><div class="shOwnerAdminHint">Удирдлагын эрх нь зөвхөн энэ сургуульд үйлчилнэ.</div></div><div class="schoolActions"><span class="pill">${esc(s.subscription?.plan||'trial')} / ${esc(s.subscription?.status||'setup')}</span><button class="ghost" onclick="openSchool('${s.id}')">⚙ Тохируулах</button><button class="ghost shOwnerAdminInvite" onclick="shOpenAdminInvite('${s.id}')">👤 Удирдлага урих</button></div></div>`).join(''):'Одоогоор сургууль алга байна.';
+    };
+    window.renderOwnerData=renderOwnerData;
+
+    window.shOpenAdminInvite=async schoolId=>{
+      await openSchool(schoolId);
+      const inviteTab=[...document.querySelectorAll('.tabs button')].find(b=>b.dataset.setup==='invite');
+      if(inviteTab)inviteTab.click();
+      const role=document.getElementById('inviteRole');
+      if(role){role.value='admin';if(typeof updateInviteFields==='function')updateInviteFields()}
+      const pane=document.getElementById('setup-invite');
+      const card=pane?.querySelector('.formCard');
+      if(card){
+        const h=card.querySelector('h4');if(h)h.textContent='👤 Сургуулийн удирдлага урих';
+        if(!card.querySelector('.shAdminInviteExplain')){
+          const note=document.createElement('div');note.className='notice shAdminInviteExplain';note.style.marginBottom='12px';note.innerHTML='<b>Хэнд өгөх вэ?</b><p>Тухайн сургуулийн захирал, сургалтын менежер, нийгмийн ажилтан эсвэл систем хариуцсан ажилтанд өгнө. Тэр хэрэглэгч зөвхөн энэ сургуулийн багш, анги, сурагчийг удирдана.</p>';card.insertBefore(note,card.firstChild);
+        }
+        const btn=card.querySelector('.btn.primary');if(btn)btn.textContent='Удирдлагын урилгын код үүсгэх';
+      }
+    };
+
+    if(typeof accessMode!=='undefined'&&accessMode==='owner'&&typeof ownerData!=='undefined'&&ownerData)renderOwnerData();
+  }
+
+  setTimeout(installOwnerAdminInviteFlow,150);
+  setTimeout(installOwnerAdminInviteFlow,1000);
 })();
